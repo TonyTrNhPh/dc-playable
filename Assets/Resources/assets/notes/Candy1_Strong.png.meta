@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: efb4d02ff4881f648b8b8fd8eabbd9cb
+guid: 7697723d97d1b944f88f12ed985d155e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7976066172866923122
-    second: Candy2_Long_0
+      213: 5698676842844662037
+    second: Candy1_Strong_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 50
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -72,10 +72,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Candy2_Long_0
+      name: Candy1_Strong_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 71
-        height: 71
+        width: 81
+        height: 81
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 27a0ebadceda0be60800000000000000
-      internalID: 7976066172866923122
+      spriteID: 519208b4564c51f40800000000000000
+      internalID: 5698676842844662037
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Candy2_Long_0: 7976066172866923122
+      Candy1_Strong_0: 5698676842844662037
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
