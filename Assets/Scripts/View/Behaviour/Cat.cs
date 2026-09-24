@@ -1,3 +1,4 @@
+using Spine;
 using Spine.Unity;
 using UnityEngine;
 using View.Behaviour;
@@ -9,22 +10,27 @@ public class Cat : MonoBehaviour
     
     private int _registeredFingerId = -1;
     private SkeletonAnimation _skeletonAnimation;
+    private int _idleAnimationVersion;
     
-    // ----------- Animation Constants ---------
-    private const string CheerAnim = "Cheering_Happy";
-    private const string MissAppeaseAnim = "Miss_Appease";
+    //----------- Cheering Animations -----------
+    private const string CheerAnim = "Cheering_Happy _Victory";
+    
+    // ----------- Losing Animations -----------
     private const string MissObjectAnim = "Miss_Object";
     private const string MissObjectLoseAnim = "Miss_Object_Lose";
     private const string MissObjectLoseAnim2 = "Miss_Object_Lose_2";
     
+    // ----------- Idle Animations -----------
+    private const string MissAppeaseAnim = "Miss_Appease";
     private const string IdleHungryAnim = "Idle_Hungry";
-    private const string IdleLickAnim = "Idle_Lick";
+    private const string IdleLickAnim = "Idle_Liemchan";
     private const string IdlePlayAnim = "Idle_Playing";
     private const string IdleStartAnim = "Idle_Start";
     private const string IdleYawnAnim = "Idle_Yawn";
     private const string IdleListenAnim = "Listening";
     private const string IdleTailAnim = "Tail";
     
+    // ----------- Eating Animations -----------
     private const string EatingAnim = "Eating";
     private const string EatingSingleAnim = "Eating_Single_Object";
     private const string EatingSingleAnim2 = "Eating_Single_Object_2";
@@ -36,6 +42,71 @@ public class Cat : MonoBehaviour
     private void Awake()
     {
         _skeletonAnimation = GetComponent<SkeletonAnimation>();
+    }
+
+    private void Start()
+    {
+        StartIdleAnimations();
+    }
+    
+    private void StartIdleAnimations()
+    {
+        _idleAnimationVersion++;
+        PlayRandomIdleAnimation(_idleAnimationVersion);
+    }
+
+    private void StopIdleAnimations()
+    {
+        _idleAnimationVersion++;
+    }
+
+    [ContextMenu("Play Lose Animation")]
+    public void PlayLoseAnimation()
+    {
+        StopIdleAnimations();
+        PlayAnimationSequence(
+            new[] { MissObjectAnim, MissObjectLoseAnim, MissObjectLoseAnim2 },
+            0);
+    }
+
+    [ContextMenu("Play Win Animation")]
+    public void PlayWinAnimation()
+    {
+        StopIdleAnimations();
+        _skeletonAnimation.AnimationState.SetAnimation(0, CheerAnim, false);
+    }
+
+    private void PlayRandomIdleAnimation(int animationVersion)
+    {
+        string[] idleAnimations =
+        {
+            MissAppeaseAnim,
+            IdleHungryAnim,
+            IdleLickAnim,
+            IdlePlayAnim,
+            IdleStartAnim,
+            IdleYawnAnim,
+            IdleListenAnim,
+            IdleTailAnim
+        };
+
+        string animationName = idleAnimations[Random.Range(0, idleAnimations.Length)];
+        TrackEntry entry = _skeletonAnimation.AnimationState.SetAnimation(0, animationName, false);
+        entry.Complete += _ =>
+        {
+            if (animationVersion == _idleAnimationVersion)
+                PlayRandomIdleAnimation(animationVersion);
+        };
+    }
+
+    private void PlayAnimationSequence(string[] animations, int index)
+    {
+        bool loop = index >= animations.Length - 1;
+        TrackEntry entry = _skeletonAnimation.AnimationState.SetAnimation(0, animations[index], loop);
+        if (index >= animations.Length - 1)
+            return;
+
+        entry.Complete += _ => PlayAnimationSequence(animations, index + 1);
     }
     
     private void Update()
