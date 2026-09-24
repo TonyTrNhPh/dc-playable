@@ -61,22 +61,9 @@ namespace Spine.Unity {
 			base.OnEnable();
 			this.canvasRenderer.cull = false;
 		}
-
-#if HAS_LIST_POOL
-		public Material UpdateModifiedMaterial (Material baseMaterial) {
-			List<IMaterialModifier> modifierComponents = ListPool<IMaterialModifier>.Get();
-			GetComponents<IMaterialModifier>(modifierComponents);
-
-			Material currentMaterial = baseMaterial;
-			for (int i = 0; i < modifierComponents.Count; i++)
-				currentMaterial = modifierComponents[i].GetModifiedMaterial(currentMaterial);
-			ListPool<IMaterialModifier>.Release(modifierComponents);
-			return currentMaterial;
-		}
-#else
+		
 		public Material UpdateModifiedMaterial (Material baseMaterial) {
 			return GetModifiedMaterial(baseMaterial);
 		}
-#endif
 	}
 }
