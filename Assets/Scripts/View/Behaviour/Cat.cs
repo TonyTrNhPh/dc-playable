@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Spine;
 using Spine.Unity;
+using TMPro;
 using UnityEngine;
 using View.Behaviour;
 
@@ -7,6 +9,7 @@ public class Cat : MonoBehaviour
 {
     [SerializeField] [LunaPlaygroundField("Cat Speed", 0, "Gameplay Adjustment")]private float speed = 2f;
     [SerializeField] private CatType catType;
+    [SerializeField] private GameObject catModel;
     
     private int _registeredFingerId = -1;
     private SkeletonAnimation _skeletonAnimation;
@@ -41,7 +44,7 @@ public class Cat : MonoBehaviour
     
     private void Awake()
     {
-        _skeletonAnimation = GetComponent<SkeletonAnimation>();
+        _skeletonAnimation = catModel.GetComponent<SkeletonAnimation>();
     }
 
     private void Start()
@@ -149,7 +152,7 @@ public class Cat : MonoBehaviour
         if (Environment.Instance != null &&
             Environment.Instance.GetPlatformBounds(catType, out Bounds platformBounds))
         {
-            float halfWidth = GetComponent<Renderer>()?.bounds.extents.x ?? 0f;
+            float halfWidth = catModel.GetComponent<Renderer>()?.bounds.extents.x ?? 0f;
             position.x = Mathf.Clamp(
                 position.x,
                 platformBounds.min.x + halfWidth,
@@ -164,12 +167,27 @@ public class Cat : MonoBehaviour
         if (Mathf.Approximately(deltaX, 0f))
             return;
 
-        transform.localRotation = Quaternion.Euler(
+        catModel.transform.localRotation = Quaternion.Euler(
             0f,
             deltaX < 0f ? 180f : 0f,
             0f);
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Edible"))
+        {
+            PlayEatingAnimation();
+            Destroy(other.gameObject);
+        }
+    }
     
+    private void PlayEatingAnimation()
+    {
+        StopIdleAnimations();
+        _skeletonAnimation.AnimationState.SetAnimation(0, EatShotAnim, false);
+        _skeletonAnimation.AnimationState.AddAnimation(0, IdleTailAnim, true, 0f);
+    }
     
 }
 

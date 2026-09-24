@@ -15,6 +15,13 @@ MonoBehaviour:
   sound: {fileID: 8300000, guid: a954f313171a102429a8330d4a5da0ef, type: 3}
   levelJson: {fileID: 4900000, guid: a67d6d23e11e84c49aff638d08ef2de6, type: 3}
   notes:
+  - id: 0
+    n: 101
+    ta: 0.3
+    ts: 0.3
+    d: 0.107143
+    v: 127
+    pid: 0
   - id: 1
     n: 101
     ta: 1.285713

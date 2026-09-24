@@ -1,3 +1,4 @@
+using SO;
 using UnityEngine;
 
 namespace View.Manager
@@ -5,15 +6,14 @@ namespace View.Manager
     public class PlayableManager : MonoBehaviour
     {
         public static PlayableManager Instance;
-    
-        [Header("Background Settings")]
-        [SerializeField] private Sprite landscapeBackground;
-        [SerializeField] private Sprite portraitBackground;
-    
-        [Header("Audio Settings")]
-        [SerializeField] private AudioClip levelClip;
-        [SerializeField] private TextAsset levelJson;
-    
+
+        [SerializeField] 
+        [LunaPlaygroundField("Fall Speed", 0, "Level Settings")] 
+        private float speed = 8f;
+        [SerializeField] [LunaPlaygroundField("Short Delay", 1, "Level Settings")]
+        private float shortDelay = 3f;
+        [SerializeField] private LevelSO levelData;
+
         private void Awake()
         {
             if (Instance == null)
@@ -37,25 +37,21 @@ namespace View.Manager
             Luna.Unity.Playable.InstallFullGame();
             Luna.Unity.LifeCycle.GameEnded();
         }
-        
-        public TextAsset GetLevelJson()
+
+        public LevelSO GetLevelData()
         {
-            return levelJson;
+            return levelData;
         }
         
-        public AudioClip GetLevelClip()
+        public float GetSpeed()
         {
-            return levelClip;
+            return speed;
         }
 
-        public Sprite GetLandscapeBackground()
+        public float GetShortDelay()
         {
-            return landscapeBackground;
+            return shortDelay;
         }
-        
-        public Sprite GetPortraitBackground()
-        {
-            return portraitBackground;
-        }
+
     }
 }
