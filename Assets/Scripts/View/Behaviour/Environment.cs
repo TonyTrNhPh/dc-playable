@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace View.Behaviour
 {
     public class Environment : MonoBehaviour
     {
-        public static Environment Instance { get; private set; }
+        public static Environment Instance;
         
         [Header("Layout")]
         [SerializeField] private Transform leftSide;
@@ -20,6 +21,7 @@ namespace View.Behaviour
         [Header("Platform")]
         [SerializeField] private SpriteRenderer leftPlatform;
         [SerializeField] private SpriteRenderer rightPlatform;
+        [SerializeField] private List<Transform> lanes = new List<Transform>();
         
         [Header("Camera")]
         [SerializeField] private float landscapeOrthographicSize = 9f;
@@ -49,6 +51,7 @@ namespace View.Behaviour
             UpdatePlatformWidth();
             UpdateBackground();
             UpdateSideLayout();
+            UpdateLanePositions();
         }
         
         private void Update()
@@ -59,6 +62,7 @@ namespace View.Behaviour
                 UpdatePlatformWidth();
                 UpdateBackground();
                 UpdateSideLayout();
+                UpdateLanePositions();
                 
                 _lastScreenWidth = Screen.width;
                 _lastScreenHeight = Screen.height;
@@ -76,7 +80,7 @@ namespace View.Behaviour
             
             float cameraHeight = _mainCamera.orthographicSize * 2f;
             float cameraBottom = _mainCamera.transform.position.y - _mainCamera.orthographicSize;
-            float targetPositionY = cameraBottom + cameraHeight / 4f;
+            float targetPositionY = cameraBottom + cameraHeight / 3f;
 
             SetSidePosition(leftSide, targetPositionX, targetPositionY);
             SetSidePosition(rightSide, -targetPositionX, targetPositionY);
@@ -93,6 +97,35 @@ namespace View.Behaviour
             float cameraWidth = _mainCamera.orthographicSize * 2f * _mainCamera.aspect;
             leftPlatform.size = new Vector2(cameraWidth / 2f - middlePadding/2f, leftPlatform.size.y);
             rightPlatform.size = new Vector2(cameraWidth / 2f - middlePadding/2f, rightPlatform.size.y);
+        }
+
+        private void UpdateLanePositions()
+        {
+            if (lanes == null || lanes.Count < 6)
+                return;
+
+            SetPlatformLanePositions(leftPlatform, 0);
+            SetPlatformLanePositions(rightPlatform, 3);
+        }
+
+        private void SetPlatformLanePositions(SpriteRenderer platform, int firstLaneIndex)
+        {
+            if (platform == null)
+                return;
+
+            Bounds platformBounds = platform.bounds;
+            float laneSpacing = platformBounds.size.x / 3f;
+
+            for (int laneIndex = 0; laneIndex < 3; laneIndex++)
+            {
+                Transform lane = lanes[firstLaneIndex + laneIndex];
+                if (lane == null)
+                    continue;
+
+                Vector3 position = lane.position;
+                position.x = platformBounds.min.x + laneSpacing * (laneIndex + 0.5f);
+                lane.position = position;
+            }
         }
         
         private static void SetSidePosition(Transform side, float x, float y)
@@ -173,6 +206,18 @@ namespace View.Behaviour
             }
 
             bounds = platform.bounds;
+            return true;
+        }
+
+        public bool TryGetLane(int laneIndex, out Transform lane)
+        {
+            if (laneIndex < 0 || laneIndex >= lanes.Count || lanes[laneIndex] == null)
+            {
+                lane = null;
+                return false;
+            }
+
+            lane = lanes[laneIndex];
             return true;
         }
     }

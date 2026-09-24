@@ -1,16 +1,35 @@
+using System;
 using UnityEngine;
 
-public class Edible : MonoBehaviour
+namespace View.Behaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class Edible : MonoBehaviour
     {
+        private SpriteRenderer _spriteRenderer;
+        private float _velocity = 5f;
         
-    }
+        private void Awake()
+        {
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public void Initialize(Sprite sprite, float velocity)
+        {
+            _spriteRenderer.sprite = sprite;
+            _velocity = velocity;
+        }  
+
+        private void Update()
+        {
+            transform.Translate(Vector3.down * _velocity * Time.deltaTime);
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag("Cat"))
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 }

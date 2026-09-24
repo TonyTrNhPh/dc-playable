@@ -1,39 +1,61 @@
 using UnityEngine;
 
-public class PlayableManager : MonoBehaviour
+namespace View.Manager
 {
-    public static PlayableManager Instance;
-    
-    [Header("Background Settings")]
-    [SerializeField] private Sprite landscapeBackground;
-    [SerializeField] private Sprite portraitBackground;
-    
-    [Header("Audio Settings")]
-    [SerializeField] private AudioClip levelClip;
-    [SerializeField] [TextArea] private string levelJson;
-    
-    private void Awake()
+    public class PlayableManager : MonoBehaviour
     {
-        if (Instance == null)
+        public static PlayableManager Instance;
+    
+        [Header("Background Settings")]
+        [SerializeField] private Sprite landscapeBackground;
+        [SerializeField] private Sprite portraitBackground;
+    
+        [Header("Audio Settings")]
+        [SerializeField] private AudioClip levelClip;
+        [SerializeField] private TextAsset levelJson;
+    
+        private void Awake()
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
-        else
+    
+        public void PlayableStart()
         {
-            Destroy(gameObject);
+            Luna.Unity.LifeCycle.GameStarted();
         }
-    }
-    
-    public void PlayableStart()
-    {
-        Luna.Unity.LifeCycle.GameStarted();
-    }
-    
-    
-    public void PlayableEnd()
-    {
-        Luna.Unity.Playable.InstallFullGame();
-        Luna.Unity.LifeCycle.GameEnded();
+        
+        public void PlayableEnd()
+        {
+            Luna.Unity.Playable.InstallFullGame();
+            Luna.Unity.LifeCycle.GameEnded();
+        }
+        
+        public TextAsset GetLevelJson()
+        {
+            return levelJson;
+        }
+        
+        public AudioClip GetLevelClip()
+        {
+            return levelClip;
+        }
+
+        public Sprite GetLandscapeBackground()
+        {
+            return landscapeBackground;
+        }
+        
+        public Sprite GetPortraitBackground()
+        {
+            return portraitBackground;
+        }
     }
 }
