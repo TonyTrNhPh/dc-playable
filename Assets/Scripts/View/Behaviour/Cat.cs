@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using Spine;
 using Spine.Unity;
 using TMPro;
@@ -7,13 +8,26 @@ using View.Behaviour;
 
 public class Cat : MonoBehaviour
 {
+    [Header("Cat Settings")]
     [SerializeField] [LunaPlaygroundField("Cat Speed", 0, "Gameplay Adjustment")]private float speed = 2f;
     [SerializeField] private CatType catType;
     [SerializeField] private GameObject catModel;
-    
+
+    [Header("UI Settings")]
+    [SerializeField] private TextMeshProUGUI floatingText;
+    [SerializeField] [LunaPlaygroundField("Floating Text Messages", 1, "Gameplay Adjustment")] private string[] floatingTextMessages = { "Yummy!", "Delicious!", "Nom Nom!", "Tasty!", "Sweet!" };
+
+    [SerializeField] private float _floatingTextFadeDuration = 0.2f;
+    [SerializeField] private  float _floatingTextVisibleDuration = 0.8f;
+
     private int _registeredFingerId = -1;
     private SkeletonAnimation _skeletonAnimation;
     private int _idleAnimationVersion;
+    private Tween _floatingTextTween;
+    private Tween _floatingTextMoveTween;
+    private int _floatingTextVersion;
+    private RectTransform _floatingTextRectTransform;
+    private Vector2 _floatingTextPosition;
     
     //----------- Cheering Animations -----------
     private const string CheerAnim = "Cheering_Happy _Victory";
@@ -45,6 +59,12 @@ public class Cat : MonoBehaviour
     private void Awake()
     {
         _skeletonAnimation = catModel.GetComponent<SkeletonAnimation>();
+        if (floatingText != null)
+        {
+            floatingText.alpha = 0f;
+            _floatingTextRectTransform = floatingText.rectTransform;
+            _floatingTextPosition = _floatingTextRectTransform.anchoredPosition;
+        }
     }
 
     private void Start()
@@ -178,8 +198,47 @@ public class Cat : MonoBehaviour
         if (other.CompareTag("Edible"))
         {
             PlayEatingAnimation();
+            ShowFloatingText();
             Destroy(other.gameObject);
         }
+    }
+
+    private void ShowFloatingText()
+    {
+        if (floatingText == null || floatingTextMessages == null || floatingTextMessages.Length == 0)
+            return;
+
+        _floatingTextVersion++;
+        int textVersion = _floatingTextVersion;
+        _floatingTextTween?.Complete();
+        _floatingTextMoveTween?.Complete();
+        Vector2 topPosition = _floatingTextPosition + Vector2.up * 50f;
+        _floatingTextRectTransform.anchoredPosition = topPosition;
+        floatingText.alpha = 0f;
+        floatingText.text = floatingTextMessages[Random.Range(0, floatingTextMessages.Length)];
+
+        _floatingTextTween = floatingText.DOFade(1f, _floatingTextFadeDuration)
+            .OnComplete(() =>
+            {
+                if (textVersion != _floatingTextVersion)
+                    return;
+
+                _floatingTextTween = floatingText
+                    .DOFade(0f, _floatingTextFadeDuration)
+                    .SetDelay(_floatingTextVisibleDuration);    
+            });
+
+        _floatingTextMoveTween = _floatingTextRectTransform
+            .DOAnchorPos(_floatingTextPosition, _floatingTextFadeDuration)
+            .OnComplete(() =>
+            {
+                if (textVersion != _floatingTextVersion)
+                    return;
+
+                _floatingTextMoveTween = _floatingTextRectTransform
+                    .DOAnchorPos(topPosition, _floatingTextFadeDuration)
+                    .SetDelay(_floatingTextVisibleDuration);
+            });
     }
     
     private void PlayEatingAnimation()

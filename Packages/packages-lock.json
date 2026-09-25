@@ -199,6 +199,13 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "2.0.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
     "com.unity.playworks.upp": {
       "version": "file:../../../Softwares/Unity Editor/7.2.0/scripts",
       "depth": 0,

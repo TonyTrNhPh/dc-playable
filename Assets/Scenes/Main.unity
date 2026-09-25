@@ -798,7 +798,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a964d057ec03734cba701c1bbd274b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 7
+  speed: 16
   shortDelay: 3
   levelData: {fileID: 11400000, guid: 4a63e2a0300ee0847986671c393f3a81, type: 2}
 --- !u!114 &705468335
@@ -1092,7 +1092,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1130512923
 MonoBehaviour:
@@ -1141,15 +1141,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 48
+  m_fontSizeBase: 48
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -1158,7 +1158,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -1536,8 +1536,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1649898350}
-  - component: {fileID: 1649898351}
   - component: {fileID: 1649898352}
+  - component: {fileID: 1649898351}
   m_Layer: 0
   m_Name: Cat
   m_TagString: Untagged
@@ -1578,6 +1578,14 @@ MonoBehaviour:
   catType: 1
   catModel: {fileID: 2077487098}
   floatingText: {fileID: 1743713232}
+  floatingTextMessages:
+  - Yummy!
+  - Delicious!
+  - Nom Nom!
+  - Tasty!
+  - Sweet!
+  _floatingTextFadeDuration: 0.2
+  _floatingTextVisibleDuration: 0.8
 --- !u!50 &1649898352
 Rigidbody2D:
   serializedVersion: 5
@@ -1640,7 +1648,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1743713232
 MonoBehaviour:
@@ -1689,15 +1697,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 48
+  m_fontSizeBase: 48
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -1706,7 +1714,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -2054,8 +2062,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1993590416}
-  - component: {fileID: 1993590417}
   - component: {fileID: 1993590418}
+  - component: {fileID: 1993590417}
   m_Layer: 0
   m_Name: Cat
   m_TagString: Untagged
@@ -2096,6 +2104,14 @@ MonoBehaviour:
   catType: 0
   catModel: {fileID: 1641347312}
   floatingText: {fileID: 1130512923}
+  floatingTextMessages:
+  - Yummy!
+  - Delicious!
+  - Nom Nom!
+  - Tasty!
+  - Sweet!
+  _floatingTextFadeDuration: 0.2
+  _floatingTextVisibleDuration: 0.8
 --- !u!50 &1993590418
 Rigidbody2D:
   serializedVersion: 5

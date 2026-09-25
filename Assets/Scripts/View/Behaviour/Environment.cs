@@ -21,7 +21,7 @@ namespace View.Behaviour
         [Header("Platform")]
         [SerializeField] private SpriteRenderer leftPlatform;
         [SerializeField] private SpriteRenderer rightPlatform;
-        [SerializeField] private List<Transform> lanes = new List<Transform>();
+        [SerializeField] private Transform[] lanes = new Transform[6];
         
         [Header("Camera")]
         [SerializeField] private float landscapeOrthographicSize = 9f;
@@ -101,7 +101,7 @@ namespace View.Behaviour
 
         private void UpdateLanePositions()
         {
-            if (lanes == null || lanes.Count < 6)
+            if (lanes == null || lanes.Length < 6)
                 return;
 
             SetPlatformLanePositions(leftPlatform, 0);
@@ -211,7 +211,7 @@ namespace View.Behaviour
 
         public bool TryGetLane(int laneIndex, out Transform lane)
         {
-            if (laneIndex < 0 || laneIndex >= lanes.Count || lanes[laneIndex] == null)
+            if (laneIndex < 0 || laneIndex >= lanes.Length || lanes[laneIndex] == null)
             {
                 lane = null;
                 return false;
