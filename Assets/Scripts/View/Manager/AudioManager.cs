@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Utility.Event;
 
 namespace View.Manager
 {
@@ -29,6 +31,7 @@ namespace View.Manager
 
             bgmSource.clip = clip;
             bgmSource.Play();
+            GameEvent.HandleBGMStarted(clip.length);
         }
         
         public void StopBGM()
@@ -40,6 +43,11 @@ namespace View.Manager
         public void PlaySFX(AudioClip clip)
         {
             sfxSource.PlayOneShot(clip);
+        }
+
+        public float GetBGMDuration()
+        {
+            return bgmSource.clip != null ? bgmSource.clip.length : 0f;
         }
     }
 }
