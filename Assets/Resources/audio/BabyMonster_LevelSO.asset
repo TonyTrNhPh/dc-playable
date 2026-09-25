@@ -14,6 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sound: {fileID: 8300000, guid: a954f313171a102429a8330d4a5da0ef, type: 3}
   levelJson: {fileID: 4900000, guid: a67d6d23e11e84c49aff638d08ef2de6, type: 3}
+  noteTypes:
+  - variant: 50
+    score: 2
+    leftSprite: {fileID: -4347536902644777086, guid: 06d1ac3aea832584daec20e817d561cf, type: 3}
+    rightSprite: {fileID: -3923744130536475318, guid: 696d11bff34e8004f8a95bf785f6b4ee, type: 3}
+  - variant: 127
+    score: 5
+    leftSprite: {fileID: 5698676842844662037, guid: 7697723d97d1b944f88f12ed985d155e, type: 3}
+    rightSprite: {fileID: -1769173556408961752, guid: 57207a0c5e3e2ee4caa584d09952c7f1, type: 3}
+  - variant: 200
+    score: 10
+    leftSprite: {fileID: -9067253411846048059, guid: 37e563ccb58c83a4f82853e5a387fc2f, type: 3}
+    rightSprite: {fileID: -9067253411846048059, guid: 37e563ccb58c83a4f82853e5a387fc2f, type: 3}
   notes:
   - id: 0
     n: 101
@@ -370,7 +383,7 @@ MonoBehaviour:
     ta: 13.714272
     ts: 0.428571
     d: 0.107143
-    v: 127
+    v: 200
     pid: 5
   - id: 51
     n: 98

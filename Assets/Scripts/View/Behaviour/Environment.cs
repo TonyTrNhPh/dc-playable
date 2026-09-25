@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 namespace View.Behaviour
@@ -17,6 +18,7 @@ namespace View.Behaviour
         [SerializeField] private SpriteRenderer background;
         [SerializeField] private Sprite landscapeBackground;
         [SerializeField] private Sprite portraitBackground;
+        [SerializeField] private float backgroundRippleDuration = 0.8f;
         
         [Header("Platform")]
         [SerializeField] private SpriteRenderer leftPlatform;
@@ -30,10 +32,23 @@ namespace View.Behaviour
         private int _lastScreenWidth;
         private int _lastScreenHeight;
         private Camera _mainCamera;
+        private MaterialPropertyBlock _backgroundRippleProperties;
+        private Tween _backgroundRippleTween;
+
+        private static readonly int RippleActiveId = Shader.PropertyToID("_RippleActive");
+        private static readonly int RippleProgressId = Shader.PropertyToID("_RippleProgress");
+        private const float RippleNormalProgress = 0.9f;
 
         private void Awake()
         {
             _mainCamera = Camera.main;
+            if (background != null)
+            {
+                _backgroundRippleProperties = new MaterialPropertyBlock();
+                SetBackgroundRippleValue(RippleActiveId, 0f);
+                SetBackgroundRippleValue(RippleProgressId, RippleNormalProgress);
+            }
+
             if (Instance == null)
             {
                 Instance = this;
@@ -219,6 +234,34 @@ namespace View.Behaviour
 
             lane = lanes[laneIndex];
             return true;
+        }
+
+        public void PlayBackgroundRipple()
+        {
+            if (background == null)
+                return;
+
+            _backgroundRippleTween?.Complete();
+            SetBackgroundRippleValue(RippleActiveId, 1f);
+            SetBackgroundRippleValue(RippleProgressId, RippleNormalProgress);
+
+            _backgroundRippleTween = DOTween.To(
+                    () => RippleNormalProgress,
+                    progress => SetBackgroundRippleValue(RippleProgressId, progress),
+                    RippleNormalProgress + 1f,
+                    backgroundRippleDuration)
+                .OnComplete(() =>
+                {
+                    SetBackgroundRippleValue(RippleActiveId, 0f);
+                    SetBackgroundRippleValue(RippleProgressId, RippleNormalProgress);
+                });
+        }
+
+        private void SetBackgroundRippleValue(int propertyId, float value)
+        {
+            background.GetPropertyBlock(_backgroundRippleProperties);
+            _backgroundRippleProperties.SetFloat(propertyId, value);
+            background.SetPropertyBlock(_backgroundRippleProperties);
         }
     }
 }

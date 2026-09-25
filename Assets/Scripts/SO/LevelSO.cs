@@ -8,6 +8,7 @@ namespace SO
     {
         public AudioClip sound;
         public TextAsset levelJson;
+        public NoteType[] noteTypes;
         public Note[] notes;
     }
     
@@ -21,5 +22,14 @@ namespace SO
         public float d;
         public int v;
         public int pid;
+    }
+    
+    [Serializable]
+    public class NoteType
+    {
+        public int variant;
+        public int score;
+        public Sprite leftSprite; 
+        public Sprite rightSprite;
     }
 }

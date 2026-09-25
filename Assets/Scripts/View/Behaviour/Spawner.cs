@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using SO;
@@ -9,15 +10,6 @@ namespace View.Behaviour
     {
         [Header("Prefabs")]
         [SerializeField] private Edible ediblePrefab;
-
-        [Header("Sprites")]
-        [SerializeField] private Sprite leftNormalSprite;
-        [SerializeField] private Sprite leftStrongSprite;
-        [SerializeField] private Sprite leftLongSprite;
-        [SerializeField] private Sprite rightNormalSprite;
-        [SerializeField] private Sprite rightStrongSprite;
-        [SerializeField] private Sprite rightLongSprite;
-        [SerializeField] private Sprite loliPopSprite;
         
         private LevelSO _level;
         private float _fallSpeed;
@@ -96,17 +88,19 @@ namespace View.Behaviour
             spawnPosition.y = GetSpawnHeight();
 
             Edible edible = Instantiate(ediblePrefab, spawnPosition, Quaternion.identity, lane);
-            edible.Initialize(sprite, _fallSpeed);
+            edible.Initialize(sprite, _fallSpeed, note.v);
         }
 
         private Sprite GetSprite(int laneIndex, int variant)
         {
             bool isLeft = laneIndex < 3;
-            if (variant == 50)
-                return isLeft ? leftNormalSprite : rightNormalSprite;
-            if (variant == 127)
-                return isLeft ? leftStrongSprite : rightStrongSprite;
+            foreach (NoteType noteType in _level.noteTypes)
+            {
+                if (noteType.variant == variant)
+                    return isLeft ? noteType.leftSprite : noteType.rightSprite;
+            }
 
+            Debug.LogWarning($"Note type for variant {variant} not found.", this);
             return null;
         }
 

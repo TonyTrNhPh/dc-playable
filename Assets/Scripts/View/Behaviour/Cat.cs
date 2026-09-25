@@ -59,6 +59,7 @@ public class Cat : MonoBehaviour
     private void Awake()
     {
         _skeletonAnimation = catModel.GetComponent<SkeletonAnimation>();
+
         if (floatingText != null)
         {
             floatingText.alpha = 0f;
@@ -199,6 +200,9 @@ public class Cat : MonoBehaviour
         {
             PlayEatingAnimation();
             ShowFloatingText();
+            Edible edible = other.GetComponent<Edible>();
+            if (edible != null && edible.Variant == 200 && Environment.Instance != null)
+                Environment.Instance.PlayBackgroundRipple();
             Destroy(other.gameObject);
         }
     }
@@ -254,9 +258,4 @@ public enum CatType
 {
     Left,
     Right
-}
-
-public enum CatAnimation
-{
-    
 }

@@ -7,16 +7,20 @@ namespace View.Behaviour
     {
         private SpriteRenderer _spriteRenderer;
         private float _velocity = 5f;
+        private int _variant;
+        
+        public int Variant => _variant;
         
         private void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        public void Initialize(Sprite sprite, float velocity)
+        public void Initialize(Sprite sprite, float velocity, int variant)
         {
             _spriteRenderer.sprite = sprite;
             _velocity = velocity;
+            _variant = variant;
         }  
 
         private void Update()
