@@ -1,5 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
+using Utility.Event;
 
 namespace View.Menu
 {
@@ -58,7 +59,8 @@ namespace View.Menu
             if (touched)
                 return;
 
-            if (Input.touchCount > 0)
+            if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) ||
+                Input.GetMouseButtonDown(0))
             {
                 touched = true;
                 HideIntro();
@@ -125,6 +127,7 @@ namespace View.Menu
 
         private void DisableIntro()
         {
+            GameEvent.HandleGameStart();
             gameObject.SetActive(false);
         }
     }

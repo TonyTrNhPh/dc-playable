@@ -13,6 +13,7 @@ namespace View.Manager
         [SerializeField] [LunaPlaygroundField("Short Delay", 1, "Level Settings")]
         private float shortDelay = 3f;
         [SerializeField] private LevelSO levelData;
+        [SerializeField] private AudioClip sfxClip;
 
         private void Awake()
         {
@@ -41,6 +42,11 @@ namespace View.Manager
         public LevelSO GetLevelData()
         {
             return levelData;
+        }
+
+        public AudioClip GetSfxClip()
+        {
+            return sfxClip;
         }
         
         public float GetSpeed()

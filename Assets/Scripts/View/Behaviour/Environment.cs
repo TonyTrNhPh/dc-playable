@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using Utility.Event;
+using View.Manager;
 
 namespace View.Behaviour
 {
@@ -239,7 +240,6 @@ namespace View.Behaviour
         {
             if (background == null)
                 return;
-
             _backgroundRippleTween?.Complete();
             SetBackgroundRippleValue(RippleActiveId, 1f);
             SetBackgroundRippleValue(RippleProgressId, RippleNormalProgress);
@@ -251,6 +251,7 @@ namespace View.Behaviour
                     backgroundRippleDuration)
                 .OnComplete(() =>
                 {
+                    AudioManager.Instance.PlaySFX(PlayableManager.Instance.GetSfxClip());
                     SetBackgroundRippleValue(RippleActiveId, 0f);
                     SetBackgroundRippleValue(RippleProgressId, RippleNormalProgress);
                 });

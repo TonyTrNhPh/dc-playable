@@ -8,6 +8,7 @@ namespace View.Manager
     {
         public static AudioManager Instance;
         
+        [Header("Sources")]
         [SerializeField] private AudioSource bgmSource;
         [SerializeField] private AudioSource sfxSource;
         

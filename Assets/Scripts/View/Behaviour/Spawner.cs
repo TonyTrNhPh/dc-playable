@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using SO;
+using Utility.Event;
 using View.Manager;
 
 namespace View.Behaviour
@@ -11,14 +12,41 @@ namespace View.Behaviour
         private LevelSO _level;
         private float _fallSpeed;
         private float _shortDelay;
-        
+
+        private bool _hasStarted;
+
+        private void OnEnable()
+        {
+            GameEvent.OnGameStart += StartSpawning;
+            GameEvent.OnGameOver += StopSpawning;
+        }
+
+        private void OnDisable()
+        {
+            GameEvent.OnGameStart -= StartSpawning;
+            GameEvent.OnGameOver -= StopSpawning;
+            StopAllCoroutines();
+        }
+
         private void Start()
         {
             _level = PlayableManager.Instance.GetLevelData();
             _fallSpeed = PlayableManager.Instance.GetSpeed();
             _shortDelay = PlayableManager.Instance.GetShortDelay();
+        }
 
+        private void StartSpawning()
+        {
+            if (_hasStarted)
+                return;
+
+            _hasStarted = true;
             StartCoroutine(SpawnLevel());
+        }
+
+        private void StopSpawning()
+        {
+            StopAllCoroutines();
         }
 
         private IEnumerator SpawnLevel()
@@ -59,7 +87,14 @@ namespace View.Behaviour
             Vector3 spawnPosition = lane.position;
             spawnPosition.y = GetSpawnHeight();
 
-            Edible edible = Instantiate(_level.GetNoteTypePrefab(note.pid,note.v), spawnPosition, Quaternion.identity, lane);
+            Edible prefab = _level.GetNoteTypePrefab(note.pid, note.v);
+            if (prefab == null)
+            {
+                Debug.LogError($"No prefab is configured for note variant {note.v} in lane {note.pid}.", this);
+                return;
+            }
+
+            Edible edible = Instantiate(prefab, spawnPosition, Quaternion.identity, lane);
             edible.Initialize(_fallSpeed, _level.GetNoteTypeScore(note.v));
         }
         
