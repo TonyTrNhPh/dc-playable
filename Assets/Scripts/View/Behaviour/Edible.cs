@@ -1,31 +1,33 @@
 using System;
 using UnityEngine;
+using Utility.Event;
 
 namespace View.Behaviour
 {
     public class Edible : MonoBehaviour
     {
-        private SpriteRenderer _spriteRenderer;
-        private float _velocity = 5f;
-        private int _variant;
-        
-        public int Variant => _variant;
-        
-        private void Awake()
-        {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
-        }
+        [SerializeField] private bool isTriggerEffect = false;
+        private float _velocity;
+        private int _score;
 
-        public void Initialize(Sprite sprite, float velocity, int variant)
+        public void Initialize(float velocity, int score)
         {
-            _spriteRenderer.sprite = sprite;
             _velocity = velocity;
-            _variant = variant;
+            _score = score;
         }  
 
         private void Update()
         {
             transform.Translate(Vector3.down * _velocity * Time.deltaTime);
+        }
+
+        private void OnDestroy()
+        {
+            GameEvent.HandleScoreChanged(_score);
+            if (isTriggerEffect)
+            {
+                GameEvent.HandleEffectChanged();
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using View.Behaviour;
 
 namespace SO
 {
@@ -10,6 +11,34 @@ namespace SO
         public TextAsset levelJson;
         public NoteType[] noteTypes;
         public Note[] notes;
+
+        public Edible GetNoteTypePrefab(int pid, int v)
+        {
+            if (noteTypes == null)
+                return null;
+
+            foreach (var type in noteTypes)
+            {
+                if (type.variant == v)
+                    return pid <=2 ? type.leftPrefab : type.rightPrefab;
+            }
+
+            return null;
+        }
+
+        public int GetNoteTypeScore(int v)
+        {
+            if (noteTypes == null)
+                return 0;
+
+            foreach (var type in noteTypes)
+            {
+                if (type.variant == v)
+                    return type.score;
+            }
+
+            return 0;
+        }
     }
     
     [Serializable]
@@ -29,7 +58,7 @@ namespace SO
     {
         public int variant;
         public int score;
-        public Sprite leftSprite; 
-        public Sprite rightSprite;
+        public Edible leftPrefab; 
+        public Edible rightPrefab;
     }
 }

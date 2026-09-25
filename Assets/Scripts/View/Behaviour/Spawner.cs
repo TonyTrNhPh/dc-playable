@@ -8,9 +8,6 @@ namespace View.Behaviour
 {
     public class Spawner : MonoBehaviour
     {
-        [Header("Prefabs")]
-        [SerializeField] private Edible ediblePrefab;
-        
         private LevelSO _level;
         private float _fallSpeed;
         private float _shortDelay;
@@ -20,30 +17,12 @@ namespace View.Behaviour
             _level = PlayableManager.Instance.GetLevelData();
             _fallSpeed = PlayableManager.Instance.GetSpeed();
             _shortDelay = PlayableManager.Instance.GetShortDelay();
-            
-            if (_level == null || ediblePrefab == null)
-            {
-                Debug.LogError("Spawner requires a level and edible prefab.", this);
-                return;
-            }
 
             StartCoroutine(SpawnLevel());
         }
 
         private IEnumerator SpawnLevel()
         {
-            if (AudioManager.Instance == null)
-            {
-                Debug.LogError("Spawner requires an AudioManager to play the level audio.", this);
-                yield break;
-            }
-
-            if (_level.sound == null)
-            {
-                Debug.LogError("The level does not have an audio clip assigned.", this);
-                yield break;
-            }
-
             StartCoroutine(PlayAudioAfterDelay());
 
             float elapsedTime = 0f;
@@ -77,33 +56,13 @@ namespace View.Behaviour
                 return;
             }
 
-            Sprite sprite = GetSprite(note.pid, note.v);
-            if (sprite == null)
-            {
-                Debug.LogWarning($"Note {note.id} has unsupported variant {note.v}.", this);
-                return;
-            }
-
             Vector3 spawnPosition = lane.position;
             spawnPosition.y = GetSpawnHeight();
 
-            Edible edible = Instantiate(ediblePrefab, spawnPosition, Quaternion.identity, lane);
-            edible.Initialize(sprite, _fallSpeed, note.v);
+            Edible edible = Instantiate(_level.GetNoteTypePrefab(note.pid,note.v), spawnPosition, Quaternion.identity, lane);
+            edible.Initialize(_fallSpeed, _level.GetNoteTypeScore(note.v));
         }
-
-        private Sprite GetSprite(int laneIndex, int variant)
-        {
-            bool isLeft = laneIndex < 3;
-            foreach (NoteType noteType in _level.noteTypes)
-            {
-                if (noteType.variant == variant)
-                    return isLeft ? noteType.leftSprite : noteType.rightSprite;
-            }
-
-            Debug.LogWarning($"Note type for variant {variant} not found.", this);
-            return null;
-        }
-
+        
         private float GetSpawnHeight()
         {
             Camera mainCamera = Camera.main;

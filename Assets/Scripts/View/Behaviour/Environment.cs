@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using Utility.Event;
 
 namespace View.Behaviour
 {
@@ -58,6 +59,8 @@ namespace View.Behaviour
             {
                 Destroy(gameObject);
             }
+            
+            GameEvent.OnEffectChanged += PlayBackgroundRipple;
         }
         
         private void Start()

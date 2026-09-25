@@ -17,16 +17,16 @@ MonoBehaviour:
   noteTypes:
   - variant: 50
     score: 2
-    leftSprite: {fileID: -4347536902644777086, guid: 06d1ac3aea832584daec20e817d561cf, type: 3}
-    rightSprite: {fileID: -3923744130536475318, guid: 696d11bff34e8004f8a95bf785f6b4ee, type: 3}
+    leftPrefab: {fileID: 7783444119690001315, guid: 682bac9f9f7543d41997f809f425184b, type: 3}
+    rightPrefab: {fileID: 7783444119690001315, guid: bc522ff4caf77ed4aadf848e9e9252bc, type: 3}
   - variant: 127
     score: 5
-    leftSprite: {fileID: 5698676842844662037, guid: 7697723d97d1b944f88f12ed985d155e, type: 3}
-    rightSprite: {fileID: -1769173556408961752, guid: 57207a0c5e3e2ee4caa584d09952c7f1, type: 3}
+    leftPrefab: {fileID: 7783444119690001315, guid: 70d31953223c7c54da16ea8b3e843043, type: 3}
+    rightPrefab: {fileID: 7783444119690001315, guid: 9671b21ac8c7439499165bdf5922afab, type: 3}
   - variant: 200
     score: 10
-    leftSprite: {fileID: -9067253411846048059, guid: 37e563ccb58c83a4f82853e5a387fc2f, type: 3}
-    rightSprite: {fileID: -9067253411846048059, guid: 37e563ccb58c83a4f82853e5a387fc2f, type: 3}
+    leftPrefab: {fileID: 7783444119690001315, guid: d7a8f470ef74b54478739dfbafcaa9f0, type: 3}
+    rightPrefab: {fileID: 7783444119690001315, guid: d7a8f470ef74b54478739dfbafcaa9f0, type: 3}
   notes:
   - id: 0
     n: 101

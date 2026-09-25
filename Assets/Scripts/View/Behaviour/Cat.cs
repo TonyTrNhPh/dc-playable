@@ -200,9 +200,6 @@ public class Cat : MonoBehaviour
         {
             PlayEatingAnimation();
             ShowFloatingText();
-            Edible edible = other.GetComponent<Edible>();
-            if (edible != null && edible.Variant == 200 && Environment.Instance != null)
-                Environment.Instance.PlayBackgroundRipple();
             Destroy(other.gameObject);
         }
     }

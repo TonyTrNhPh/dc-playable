@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5114818768081104030}
   - component: {fileID: 7783444119690001315}
   m_Layer: 0
-  m_Name: Candy
+  m_Name: Candy1_Normal
   m_TagString: Edible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
