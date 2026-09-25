@@ -182,13 +182,9 @@ namespace View.Behaviour
 
             float scale = Mathf.Max(scaleX, scaleY);
 
-            background.transform.localScale = new Vector3(
-                scale,
-                scale,
-                1f
-            );
+            background.transform.localScale = new Vector3(scale, scale, 1f);
 
-            float cameraBottom = _mainCamera.transform.position.y
+            float cameraBottom = _mainCamera.transform.position.y 
                                  - _mainCamera.orthographicSize;
 
             float backgroundHeight = background.bounds.size.y;
