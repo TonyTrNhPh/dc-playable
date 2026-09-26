@@ -7,13 +7,13 @@ namespace View.Manager
     public class AudioManager : MonoBehaviour
     {
         public static AudioManager Instance;
-        
+
         [Header("Sources")]
         [SerializeField] private AudioSource bgmSource;
         [SerializeField] private AudioSource sfxSource;
 
         private Coroutine _bgmMonitor;
-        
+
         private void Awake()
         {
             if (Instance == null)
@@ -26,30 +26,24 @@ namespace View.Manager
                 Destroy(gameObject);
             }
         }
-        
+
         public void PlayBGM(AudioClip clip)
         {
-            if (clip == null)
-            {
-                Debug.LogError("Cannot play a null BGM clip.", this);
-                return;
-            }
-
             if (bgmSource.clip == clip && bgmSource.isPlaying)
                 return;
 
-            if (_bgmMonitor != null)
-                StopCoroutine(_bgmMonitor);
+            StopBGM();
 
             bgmSource.clip = clip;
             bgmSource.Play();
+
             GameEvent.HandleBGMStarted(clip.length);
-            _bgmMonitor = StartCoroutine(WaitForBGMEnd());
+
+            _bgmMonitor = StartCoroutine(WaitForBGMEnd(clip));
         }
-        
-        public void StopBGM()
+
+        private void StopBGM()
         {
-            bool wasPlaying = bgmSource.isPlaying;
             bgmSource.Stop();
             bgmSource.clip = null;
 
@@ -58,23 +52,28 @@ namespace View.Manager
                 StopCoroutine(_bgmMonitor);
                 _bgmMonitor = null;
             }
-
-            if (wasPlaying)
-                GameEvent.HandleBGMEnded();
         }
 
-        private IEnumerator WaitForBGMEnd()
+        private IEnumerator WaitForBGMEnd(AudioClip clip)
         {
-            yield return null;
-            while (bgmSource.isPlaying)
+            double endTime = AudioSettings.dspTime + clip.length;
+
+            while (AudioSettings.dspTime < endTime)
                 yield return null;
 
             _bgmMonitor = null;
+
+            if (bgmSource.clip != clip)
+                yield break;
+
             GameEvent.HandleBGMEnded();
         }
-        
+
         public void PlaySFX(AudioClip clip)
         {
+            if (clip == null)
+                return;
+
             sfxSource.PlayOneShot(clip);
         }
 

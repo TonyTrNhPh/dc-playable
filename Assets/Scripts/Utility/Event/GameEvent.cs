@@ -18,7 +18,7 @@ namespace Utility.Event
         public static void HandleScoreChanged(int score) => OnScoreChanged?.Invoke(score);
         public static void HandleEffectChanged() => OnEffectChanged?.Invoke();
         public static void HandleCTAClicked() => OnCTAClicked?.Invoke();
-        public static void HandleBGMStarted(float durtaion) => OnBGMStarted?.Invoke(durtaion);
+        public static void HandleBGMStarted(float duration) => OnBGMStarted?.Invoke(duration);
         public static void HandleBGMEnded() => OnBGMEnded?.Invoke();
         public static void HandleOutroTransitionStarted() => OnOutroTransitionStarted?.Invoke();
     }

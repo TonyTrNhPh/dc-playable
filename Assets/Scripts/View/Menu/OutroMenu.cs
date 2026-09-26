@@ -124,6 +124,7 @@ namespace View.Menu
 
         public void CTAClicked()
         {
+            Debug.Log("CTAClicked");
             GameEvent.HandleCTAClicked();
         }
     }
