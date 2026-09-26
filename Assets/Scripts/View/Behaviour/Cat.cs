@@ -17,10 +17,10 @@ namespace View.Behaviour
         [Header("UI Settings")]
         [SerializeField] private TextMeshProUGUI floatingText;
         [SerializeField] [LunaPlaygroundField("Floating Text Messages", 1, "Gameplay Adjustment")] private string[] floatingTextMessages = { "Yummy!", "Delicious!", "Nom Nom!", "Tasty!", "Sweet!" };
-
         [SerializeField] private float _floatingTextFadeDuration = 0.2f;
         [SerializeField] private  float _floatingTextVisibleDuration = 0.8f;
-
+        [SerializeField] private ParticleSystem crumbParticle;
+        
         private int _registeredFingerId = -1;
         private SkeletonAnimation _skeletonAnimation;
         private int _idleAnimationVersion;
@@ -268,6 +268,7 @@ namespace View.Behaviour
         private void PlayEatingAnimation()
         {
             StopIdleAnimations();
+            crumbParticle.Play();
             _skeletonAnimation.AnimationState.SetAnimation(0, EatShotAnim, false);
             _skeletonAnimation.AnimationState.AddAnimation(0, IdleTailAnim, true, 0f);
         }
