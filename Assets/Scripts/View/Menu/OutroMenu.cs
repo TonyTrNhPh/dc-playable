@@ -1,5 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
+using Utility.Event;
 
 namespace View.Menu
 {
@@ -119,6 +120,11 @@ namespace View.Menu
             Vector3 worldCenter = card.TransformPoint(card.rect.center);
 
             return _handTransform.parent.InverseTransformPoint(worldCenter);
+        }
+
+        public void CTAClicked()
+        {
+            GameEvent.HandleCTAClicked();
         }
     }
 }

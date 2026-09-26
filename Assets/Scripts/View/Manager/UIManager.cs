@@ -1,7 +1,4 @@
-using System;
 using UnityEngine;
-using Utility.Event;
-using System.Collections;
 
 namespace View.Manager
 {
@@ -12,12 +9,6 @@ namespace View.Manager
         [SerializeField] private GameObject introMenu;
         [SerializeField] private GameObject outroMenu;
         [SerializeField] private GameObject playMenu;
-        [SerializeField] private float outroDelay = 1f;
-        [SerializeField] private GameObject transitionEffect;
-
-        private bool _gameStarted;
-        private bool _gameEnded;
-        private Coroutine _outroCoroutine;
 
         private void Awake()
         {
@@ -29,23 +20,16 @@ namespace View.Manager
             else
             {
                 Destroy(gameObject);
+                return;
             }
+
+            HideAllMenu();
         }
 
-        private void Start()
+        private void OnDestroy()
         {
-            EnsureMenu();
-        }
-
-        private void EnsureMenu()
-        {
-            introMenu.SetActive(true); 
-            playMenu.SetActive(true);
-            outroMenu.SetActive(true);
-            
-            introMenu.SetActive(false); 
-            playMenu.SetActive(false); 
-            outroMenu.SetActive(false); 
+            if (Instance == this)
+                Instance = null;
         }
 
         public void ShowMenu(EMenu menu)
@@ -75,10 +59,6 @@ namespace View.Manager
             }
         }
 
-        public void PlayTransition()
-        {
-            transitionEffect.SetActive(true);
-        }
     }
 
     public enum EMenu

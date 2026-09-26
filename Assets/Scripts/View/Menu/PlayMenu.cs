@@ -22,8 +22,8 @@ namespace View.Menu
         [SerializeField] private float heartPunchDuration = 0.5f;
         [SerializeField] private float scorePunchScale = 0.3f;
         [SerializeField] private float scorePunchDuration = 0.35f;
+        [SerializeField] private GameObject transitionPanel;
 
-        
         private Tween _progressTween;
         private Tween _scorePunchTween;
         private readonly Tween[] _heartTweens = new Tween[3];
@@ -34,12 +34,14 @@ namespace View.Menu
         {
             GameEvent.OnBGMStarted += StartProgress;
             GameEvent.OnScoreChanged += HandleScoreChanged;
+            GameEvent.OnOutroTransitionStarted += PlayOutroTransition;
         }
 
         private void OnDisable()
         {
             GameEvent.OnBGMStarted -= StartProgress;
             GameEvent.OnScoreChanged -= HandleScoreChanged;
+            GameEvent.OnOutroTransitionStarted -= PlayOutroTransition;
             _progressTween?.Kill();
             _scorePunchTween?.Kill();
             foreach (Tween heartTween in _heartTweens)
@@ -65,6 +67,17 @@ namespace View.Menu
             _scorePunchTween = scoreText.transform.DOPunchScale(
                 Vector3.one * scorePunchScale,
                 scorePunchDuration);
+        }
+
+        private void PlayOutroTransition()
+        {
+            if (transitionPanel == null)
+            {
+                Debug.LogError("PlayMenu transition panel is not assigned.", this);
+                return;
+            }
+
+            transitionPanel.SetActive(true);
         }
 
         private void UpdateScoreText()

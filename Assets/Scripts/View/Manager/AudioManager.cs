@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using UnityEngine;
 using Utility.Event;
 
@@ -11,6 +11,8 @@ namespace View.Manager
         [Header("Sources")]
         [SerializeField] private AudioSource bgmSource;
         [SerializeField] private AudioSource sfxSource;
+
+        private Coroutine _bgmMonitor;
         
         private void Awake()
         {
@@ -27,18 +29,48 @@ namespace View.Manager
         
         public void PlayBGM(AudioClip clip)
         {
+            if (clip == null)
+            {
+                Debug.LogError("Cannot play a null BGM clip.", this);
+                return;
+            }
+
             if (bgmSource.clip == clip && bgmSource.isPlaying)
                 return;
+
+            if (_bgmMonitor != null)
+                StopCoroutine(_bgmMonitor);
 
             bgmSource.clip = clip;
             bgmSource.Play();
             GameEvent.HandleBGMStarted(clip.length);
+            _bgmMonitor = StartCoroutine(WaitForBGMEnd());
         }
         
         public void StopBGM()
         {
+            bool wasPlaying = bgmSource.isPlaying;
             bgmSource.Stop();
             bgmSource.clip = null;
+
+            if (_bgmMonitor != null)
+            {
+                StopCoroutine(_bgmMonitor);
+                _bgmMonitor = null;
+            }
+
+            if (wasPlaying)
+                GameEvent.HandleBGMEnded();
+        }
+
+        private IEnumerator WaitForBGMEnd()
+        {
+            yield return null;
+            while (bgmSource.isPlaying)
+                yield return null;
+
+            _bgmMonitor = null;
+            GameEvent.HandleBGMEnded();
         }
         
         public void PlaySFX(AudioClip clip)

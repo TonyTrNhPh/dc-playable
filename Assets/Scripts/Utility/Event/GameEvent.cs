@@ -10,6 +10,8 @@ namespace Utility.Event
         public static event Action OnEffectChanged = delegate { };
         public static event Action OnCTAClicked = delegate { };
         public static event Action<float> OnBGMStarted = delegate { };
+        public static event Action OnBGMEnded = delegate { };
+        public static event Action OnOutroTransitionStarted = delegate { };
         
         public static void HandleGameStart() => OnGameStart?.Invoke();
         public static void HandleGameOver() => OnGameOver?.Invoke();
@@ -17,5 +19,7 @@ namespace Utility.Event
         public static void HandleEffectChanged() => OnEffectChanged?.Invoke();
         public static void HandleCTAClicked() => OnCTAClicked?.Invoke();
         public static void HandleBGMStarted(float durtaion) => OnBGMStarted?.Invoke(durtaion);
+        public static void HandleBGMEnded() => OnBGMEnded?.Invoke();
+        public static void HandleOutroTransitionStarted() => OnOutroTransitionStarted?.Invoke();
     }
 }
