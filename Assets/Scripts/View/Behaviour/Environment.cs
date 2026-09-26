@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -26,6 +27,8 @@ namespace View.Behaviour
         [SerializeField] private SpriteRenderer leftPlatform;
         [SerializeField] private SpriteRenderer rightPlatform;
         [SerializeField] private Transform[] lanes = new Transform[6];
+        [SerializeField] private Transform deadLine;
+        [SerializeField] private Transform ground;
         
         [Header("Camera")]
         [SerializeField] private float landscapeOrthographicSize = 9f;
@@ -60,10 +63,18 @@ namespace View.Behaviour
             {
                 Destroy(gameObject);
             }
-            
+        }
+
+        private void OnEnable()
+        {
             GameEvent.OnEffectChanged += PlayBackgroundRipple;
         }
-        
+
+        private void OnDisable()
+        {
+            GameEvent.OnEffectChanged -= PlayBackgroundRipple;
+        }
+
         private void Start()
         {
             UpdateOrthographicSize();
@@ -71,21 +82,6 @@ namespace View.Behaviour
             UpdateBackground();
             UpdateSideLayout();
             UpdateLanePositions();
-        }
-        
-        private void Update()
-        {
-            if (Screen.width != _lastScreenWidth || Screen.height != _lastScreenHeight)
-            {
-                UpdateOrthographicSize();
-                UpdatePlatformWidth();
-                UpdateBackground();
-                UpdateSideLayout();
-                UpdateLanePositions();
-                
-                _lastScreenWidth = Screen.width;
-                _lastScreenHeight = Screen.height;
-            }
         }
         
         private void UpdateSideLayout()
@@ -103,6 +99,8 @@ namespace View.Behaviour
 
             SetSidePosition(leftSide, targetPositionX, targetPositionY);
             SetSidePosition(rightSide, -targetPositionX, targetPositionY);
+            deadLine.position= new Vector2(deadLine.position.x,targetPositionY);
+            ground.position = new Vector2(ground.position.x,cameraBottom + cameraHeight / 10f);
         }
 
         private void UpdatePlatformWidth()
@@ -114,6 +112,7 @@ namespace View.Behaviour
                 return;
 
             float cameraWidth = _mainCamera.orthographicSize * 2f * _mainCamera.aspect;
+            
             leftPlatform.size = new Vector2(cameraWidth / 2f - middlePadding/2f, leftPlatform.size.y);
             rightPlatform.size = new Vector2(cameraWidth / 2f - middlePadding/2f, rightPlatform.size.y);
         }

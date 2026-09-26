@@ -138,3 +138,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTriggerEffect: 0
+  crashSprite: {fileID: -7379410385450418574, guid: 56cc2b8db6b492642b96173dc083871f, type: 3}
+  fallVelocity: 100
+  fallAcceleration: 120
+  crashSpriteDelay: 0.05
+  crashClip: {fileID: 8300000, guid: 80e481f30fe9318408b0a5142b2b1b8a, type: 3}

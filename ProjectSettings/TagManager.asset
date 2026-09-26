@@ -6,8 +6,8 @@ TagManager:
   tags:
   - Cat
   - Edible
-  - Missile
-  - Target
+  - Deadline
+  - Ground
   layers:
   - Default
   - TransparentFX

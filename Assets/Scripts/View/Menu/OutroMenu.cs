@@ -1,11 +1,16 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 using Utility.Event;
 
 namespace View.Menu
 {
     public class OutroMenu : MonoBehaviour
     {
+        [Header("CTA Settings")]
+        [SerializeField] private Button ctaButton;
+        
         [Header("Portrait Settings")]
         [SerializeField] private GameObject portraitMode;
         [SerializeField] private GameObject[] portraitSongCards;
@@ -37,7 +42,8 @@ namespace View.Menu
         private void Start()
         {
             _isLandscapeMode = Screen.width > Screen.height;
-
+            ctaButton.onClick.AddListener(CTAClicked);
+            
             UpdateUI();
             StartAnimation();
         }

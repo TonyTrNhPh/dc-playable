@@ -67,15 +67,16 @@ namespace View.Menu
 
         private void UpdateUI()
         {
+            Debug.Log("Screen height: " + Screen.height);
+            Debug.Log("Screen width: " + Screen.width);
+            
             _transformLeft.anchoredPosition = new Vector2(
-                _transformLeft.anchoredPosition.x + _arrowWidth / 2,
-                _transformLeft.anchoredPosition.y + Screen.height / 5f
-            );
+                _transformLeft.anchoredPosition.x + _arrowWidth / 2, 
+                _transformLeft.anchoredPosition.y + Screen.height / 5f);
 
             _transformRight.anchoredPosition = new Vector2(
-                _transformRight.anchoredPosition.x - _arrowWidth / 2,
-                _transformRight.anchoredPosition.y + Screen.height / 5f
-            );
+                _transformRight.anchoredPosition.x - _arrowWidth / 2, 
+                _transformRight.anchoredPosition.y + Screen.height / 5f);
 
             _moveDistance = Screen.width / 4f - _arrowWidth / 2;
         }

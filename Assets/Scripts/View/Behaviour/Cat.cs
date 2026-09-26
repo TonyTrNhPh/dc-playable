@@ -77,13 +77,16 @@ namespace View.Behaviour
 
         private void OnEnable()
         {
-            GameEvent.OnBGMEnded += PlayWinAnimation;
+            GameEvent.OnGameWon += PlayWinAnimation;
+            GameEvent.OnGameLost += PlayLoseAnimation;
             GameEvent.OnOutroTransitionStarted += DisableInput;
+            
         }
 
         private void OnDisable()
         {
-            GameEvent.OnBGMEnded -= PlayWinAnimation;
+            GameEvent.OnGameWon -= PlayWinAnimation;
+            GameEvent.OnGameLost -= PlayLoseAnimation;
             GameEvent.OnOutroTransitionStarted -= DisableInput;
         }
     
@@ -98,20 +101,16 @@ namespace View.Behaviour
             _idleAnimationVersion++;
         }
 
-        [ContextMenu("Play Lose Animation")]
-        public void PlayLoseAnimation()
+        private void PlayLoseAnimation()
         {
             StopIdleAnimations();
-            PlayAnimationSequence(
-                new[] { MissObjectAnim, MissObjectLoseAnim, MissObjectLoseAnim2 },
-                0);
+            _skeletonAnimation.AnimationState.SetAnimation(0, MissObjectLoseAnim2, true);
         }
-
-        [ContextMenu("Play Win Animation")]
-        public void PlayWinAnimation()
+        
+        private void PlayWinAnimation()
         {
             StopIdleAnimations();
-            _skeletonAnimation.AnimationState.SetAnimation(0, CheerAnim, false);
+            _skeletonAnimation.AnimationState.SetAnimation(0, CheerAnim, true);
         }
 
         private void PlayRandomIdleAnimation(int animationVersion)
@@ -136,17 +135,7 @@ namespace View.Behaviour
                     PlayRandomIdleAnimation(animationVersion);
             };
         }
-
-        private void PlayAnimationSequence(string[] animations, int index)
-        {
-            bool loop = index >= animations.Length - 1;
-            TrackEntry entry = _skeletonAnimation.AnimationState.SetAnimation(0, animations[index], loop);
-            if (index >= animations.Length - 1)
-                return;
-
-            entry.Complete += _ => PlayAnimationSequence(animations, index + 1);
-        }
-    
+        
         private void Update()
         {
             if (!_inputEnabled)
@@ -219,6 +208,9 @@ namespace View.Behaviour
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            if(!_inputEnabled)
+                return;
+            
             if (other.CompareTag("Edible"))
             {
                 PlayEatingAnimation();

@@ -39,10 +39,10 @@ namespace View.Manager
 
             GameEvent.HandleBGMStarted(clip.length);
 
-            _bgmMonitor = StartCoroutine(WaitForBGMEnd(clip));
+            _bgmMonitor = StartCoroutine(WaitForBGMEnd());
         }
 
-        private void StopBGM()
+        public void StopBGM()
         {
             bgmSource.Stop();
             bgmSource.clip = null;
@@ -53,20 +53,16 @@ namespace View.Manager
                 _bgmMonitor = null;
             }
         }
-
-        private IEnumerator WaitForBGMEnd(AudioClip clip)
+        
+        private IEnumerator WaitForBGMEnd()
         {
-            double endTime = AudioSettings.dspTime + clip.length;
-
-            while (AudioSettings.dspTime < endTime)
+            yield return null;
+            
+            while (bgmSource.isPlaying)
                 yield return null;
 
             _bgmMonitor = null;
-
-            if (bgmSource.clip != clip)
-                yield break;
-
-            GameEvent.HandleBGMEnded();
+            GameEvent.HandleGameWon();
         }
 
         public void PlaySFX(AudioClip clip)

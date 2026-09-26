@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using SO;
 using Utility.Event;
@@ -14,17 +15,22 @@ namespace View.Behaviour
         private float _shortDelay;
 
         private bool _hasStarted;
+        
+        private Edible[] spawnedNotes;
 
         private void OnEnable()
         {
             GameEvent.OnGameStart += StartSpawning;
-            GameEvent.OnGameOver += StopSpawning;
+            GameEvent.OnGameWon += StopSpawning;
+            GameEvent.OnGameLost += StopSpawning;
         }
 
         private void OnDisable()
         {
             GameEvent.OnGameStart -= StartSpawning;
-            GameEvent.OnGameOver -= StopSpawning;
+            GameEvent.OnGameWon -= StopSpawning;
+            GameEvent.OnGameLost -= StopSpawning;
+            
             StopAllCoroutines();
         }
 
@@ -46,6 +52,7 @@ namespace View.Behaviour
 
         private void StopSpawning()
         {
+            Debug.Log("Stop spawning");
             StopAllCoroutines();
         }
 

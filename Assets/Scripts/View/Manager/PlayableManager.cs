@@ -9,14 +9,19 @@ namespace View.Manager
     {
         public static PlayableManager Instance;
 
-        [SerializeField] 
-        [LunaPlaygroundField("Fall Speed", 0, "Level Settings")] 
-        private float speed = 8f;
-        [SerializeField] [LunaPlaygroundField("Short Delay", 1, "Level Settings")]
-        private float shortDelay = 3f;
+        [Header("Level Settings")]
+        [SerializeField] [LunaPlaygroundField("Cheat Enable",0, "Level Settings")] private bool cheatEnable;
+        [SerializeField] [LunaPlaygroundField("Fall Speed", 1, "Level Settings")] private float speed = 8f;
         [SerializeField] private LevelSO levelData;
+        
+        [Header("Audio Settings")]
         [SerializeField] private AudioClip sfxClip;
+        [SerializeField] private AudioClip loseClip;
+        [SerializeField] private AudioClip winClip;
+        
+        [Header("Animation Settings")]
         [SerializeField] private float cheerDelay = 0.75f;
+        [SerializeField] [LunaPlaygroundField("Short Delay", 2, "Level Settings")] private float shortDelay = 3f;
         [SerializeField] private float transitionToOutroDelay = 2f;
 
         private Coroutine _gameEndCoroutine;
@@ -34,22 +39,26 @@ namespace View.Manager
             else
             {
                 Destroy(gameObject);
-                return;
             }
         }
 
         private void OnEnable()
         {
             GameEvent.OnGameStart += HandleGameStarted;
-            GameEvent.OnBGMEnded += HandleBGMEnded;
-            GameEvent.OnCTAClicked += PlayableEnd;
+            GameEvent.OnGameWon += HandleGameWon;
+            GameEvent.OnGameLost += HandleGameLost;
+            
+            GameEvent.OnCTAClicked += HandleCTAClicked;
         }
 
         private void OnDisable()
         {
             GameEvent.OnGameStart -= HandleGameStarted;
-            GameEvent.OnBGMEnded -= HandleBGMEnded;
-            GameEvent.OnCTAClicked -= PlayableEnd;
+            GameEvent.OnGameWon += HandleGameWon;
+            GameEvent.OnGameLost -= HandleGameLost;
+            
+            GameEvent.OnCTAClicked -= HandleCTAClicked;
+            
             if (_gameEndCoroutine != null)
             {
                 StopCoroutine(_gameEndCoroutine);
@@ -75,12 +84,8 @@ namespace View.Manager
                 Instance = null;
         }
 
-        private void PlayableEnd()
+        private void HandleCTAClicked()
         {
-            if (_playableEnded)
-                return;
-
-            _playableEnded = true;
             Luna.Unity.Playable.InstallFullGame();
             Luna.Unity.LifeCycle.GameEnded();
         }
@@ -95,13 +100,48 @@ namespace View.Manager
             UIManager.Instance.ShowMenu(EMenu.PlayMenu);
         }
 
-        private void HandleBGMEnded()
+        private void HandleGameWon()
+        {
+            if (!_gameStarted || _gameEnding)
+                return;
+            
+            AudioManager.Instance.PlaySFX(winClip);
+            
+            _gameEnding = true;
+            _gameEndCoroutine = StartCoroutine(EndGameFlow());
+            
+            GameEvent.HandleGameWon();
+            
+            if (_playableEnded)
+                return;
+
+            _playableEnded = true;
+            
+            Luna.Unity.Playable.InstallFullGame();
+            Luna.Unity.LifeCycle.GameEnded();
+        }
+
+        private void HandleGameLost()
         {
             if (!_gameStarted || _gameEnding)
                 return;
 
+            AudioManager.Instance.StopBGM();
+            AudioManager.Instance.PlaySFX(loseClip);
+            
             _gameEnding = true;
             _gameEndCoroutine = StartCoroutine(EndGameFlow());
+            
+            GameEvent.HandleGameLost();
+            
+            if (_playableEnded)
+                return;
+
+            _playableEnded = true;
+            
+            
+            Luna.Unity.Playable.InstallFullGame();
+            Luna.Unity.LifeCycle.GameEnded();
         }
 
         private IEnumerator EndGameFlow()
@@ -119,8 +159,7 @@ namespace View.Manager
 
             UIManager.Instance.HideMenu(EMenu.PlayMenu);
             UIManager.Instance.ShowMenu(EMenu.Outro);
-            GameEvent.HandleGameOver();
-            PlayableEnd();
+            
             _gameEndCoroutine = null;
         }
 
@@ -142,6 +181,11 @@ namespace View.Manager
         public float GetShortDelay()
         {
             return shortDelay;
+        }
+
+        public bool GetCheat()
+        {
+            return cheatEnable;
         }
 
     }
