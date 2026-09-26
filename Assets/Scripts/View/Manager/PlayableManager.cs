@@ -1,5 +1,7 @@
+using System;
 using SO;
 using UnityEngine;
+using Utility.Event;
 
 namespace View.Manager
 {
@@ -26,10 +28,23 @@ namespace View.Manager
             {
                 Destroy(gameObject);
             }
+
+            GameEvent.OnGameStart += HandleGameStarted;
         }
-    
-        public void PlayableStart()
+
+        private void Start()
         {
+            PlayableStart();
+        }
+
+        private void OnDestroy()
+        {
+            GameEvent.OnGameStart -= HandleGameStarted;
+        }
+
+        private void PlayableStart()
+        {
+            UIManager.Instance.ShowMenu(EMenu.Intro);
             Luna.Unity.LifeCycle.GameStarted();
         }
         
@@ -37,6 +52,12 @@ namespace View.Manager
         {
             Luna.Unity.Playable.InstallFullGame();
             Luna.Unity.LifeCycle.GameEnded();
+        }
+
+        private void HandleGameStarted()
+        {
+            UIManager.Instance.HideAllMenu();
+            UIManager.Instance.ShowMenu(EMenu.PlayMenu);
         }
 
         public LevelSO GetLevelData()

@@ -236,14 +236,14 @@ namespace View.Behaviour
             return true;
         }
 
-        public void PlayBackgroundRipple()
+        private void PlayBackgroundRipple()
         {
             if (background == null)
                 return;
             _backgroundRippleTween?.Complete();
             SetBackgroundRippleValue(RippleActiveId, 1f);
             SetBackgroundRippleValue(RippleProgressId, RippleNormalProgress);
-
+            AudioManager.Instance.PlaySFX(PlayableManager.Instance.GetSfxClip());
             _backgroundRippleTween = DOTween.To(
                     () => RippleNormalProgress,
                     progress => SetBackgroundRippleValue(RippleProgressId, progress),
@@ -251,7 +251,6 @@ namespace View.Behaviour
                     backgroundRippleDuration)
                 .OnComplete(() =>
                 {
-                    AudioManager.Instance.PlaySFX(PlayableManager.Instance.GetSfxClip());
                     SetBackgroundRippleValue(RippleActiveId, 0f);
                     SetBackgroundRippleValue(RippleProgressId, RippleNormalProgress);
                 });

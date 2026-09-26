@@ -23,6 +23,7 @@ namespace View.Menu
         [SerializeField] private float scorePunchScale = 0.3f;
         [SerializeField] private float scorePunchDuration = 0.35f;
 
+        
         private Tween _progressTween;
         private Tween _scorePunchTween;
         private readonly Tween[] _heartTweens = new Tween[3];
@@ -31,13 +32,13 @@ namespace View.Menu
 
         private void OnEnable()
         {
-            GameEvent.OnBGMStarted += StartSongProgress;
+            GameEvent.OnBGMStarted += StartProgress;
             GameEvent.OnScoreChanged += HandleScoreChanged;
         }
 
         private void OnDisable()
         {
-            GameEvent.OnBGMStarted -= StartSongProgress;
+            GameEvent.OnBGMStarted -= StartProgress;
             GameEvent.OnScoreChanged -= HandleScoreChanged;
             _progressTween?.Kill();
             _scorePunchTween?.Kill();
@@ -72,7 +73,7 @@ namespace View.Menu
                 scoreText.text = _score.ToString();
         }
 
-        private void StartSongProgress(float songDuration)
+        private void StartProgress(float songDuration)
         {
             ResetProgress();
             if (progressFill == null || songDuration <= 0f)

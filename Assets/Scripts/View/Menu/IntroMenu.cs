@@ -46,7 +46,6 @@ namespace View.Menu
         {
             UpdateUI();
 
-            // Start invisible
             _canvasLeft.alpha = 0f;
             _canvasRight.alpha = 0f;
             _canvasMessage.alpha = 0f;
@@ -59,8 +58,7 @@ namespace View.Menu
             if (touched)
                 return;
 
-            if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) ||
-                Input.GetMouseButtonDown(0))
+            if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
             {
                 touched = true;
                 HideIntro();

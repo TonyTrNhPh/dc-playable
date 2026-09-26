@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using Utility.Event;
+using System.Collections;
 
 namespace View.Manager
 {
@@ -7,10 +9,11 @@ namespace View.Manager
     {
         public static UIManager Instance;
     
-        [SerializeField] private Transform introMenu;
-        [SerializeField] private Transform outroMenu;
-        [SerializeField] private Transform playMenu;
+        [SerializeField] private GameObject introMenu;
+        [SerializeField] private GameObject outroMenu;
+        [SerializeField] private GameObject playMenu;
         [SerializeField] private float outroDelay = 1f;
+        [SerializeField] private GameObject transitionEffect;
 
         private bool _gameStarted;
         private bool _gameEnded;
@@ -21,100 +24,67 @@ namespace View.Manager
             if (Instance == null)
             {
                 Instance = this;
+                DontDestroyOnLoad(gameObject);
             }
             else
             {
                 Destroy(gameObject);
-                return;
             }
-
-            SetMenuActive(introMenu, true);
-            SetMenuActive(playMenu, false);
-            SetMenuActive(outroMenu, false);
         }
 
-        private void OnEnable()
+        private void Start()
         {
-            GameEvent.OnGameStart += OnGameStarted;
-            GameEvent.OnBGMStarted += OnBGMStarted;
-            GameEvent.OnGameOver += OnGameEnded;
+            EnsureMenu();
         }
 
-        private void OnDisable()
+        private void EnsureMenu()
         {
-            GameEvent.OnGameStart -= OnGameStarted;
-            GameEvent.OnBGMStarted -= OnBGMStarted;
-            GameEvent.OnGameOver -= OnGameEnded;
+            introMenu.SetActive(true); 
+            playMenu.SetActive(true);
+            outroMenu.SetActive(true);
+            
+            introMenu.SetActive(false); 
+            playMenu.SetActive(false); 
+            outroMenu.SetActive(false); 
+        }
 
-            if (_outroCoroutine != null)
+        public void ShowMenu(EMenu menu)
+        {
+            switch (menu)
             {
-                StopCoroutine(_outroCoroutine);
-                _outroCoroutine = null;
+                case EMenu.Intro: introMenu.SetActive(true); break;
+                case EMenu.PlayMenu: playMenu.SetActive(true); break;
+                case EMenu.Outro: outroMenu.SetActive(true); break;
             }
         }
 
-        private void OnDestroy()
+        public void HideAllMenu()
         {
-            if (Instance == this)
-                Instance = null;
+            introMenu.SetActive(false); 
+            playMenu.SetActive(false); 
+            outroMenu.SetActive(false); 
         }
-
-        private void OnGameStarted()
+        
+        public void HideMenu(EMenu menu)
         {
-            if (_gameStarted)
-                return;
-
-            _gameStarted = true;
-            SetMenuActive(introMenu, false);
-            SetMenuActive(playMenu, true);
-            SetMenuActive(outroMenu, false);
-
-            if (PlayableManager.Instance == null)
+            switch (menu)
             {
-                Debug.LogError("PlayableManager is required to start the game.", this);
-                return;
+                case EMenu.Intro: introMenu.SetActive(false); break;
+                case EMenu.PlayMenu: playMenu.SetActive(false); break;
+                case EMenu.Outro: outroMenu.SetActive(false); break;
             }
-
-            PlayableManager.Instance.PlayableStart();
         }
 
-        private void OnBGMStarted(float duration)
+        public void PlayTransition()
         {
-            if (!_gameStarted || _gameEnded)
-                return;
-
-            if (_outroCoroutine != null)
-                StopCoroutine(_outroCoroutine);
-
-            _outroCoroutine = StartCoroutine(WaitForMusicEnd(duration));
+            transitionEffect.SetActive(true);
         }
+    }
 
-        private System.Collections.IEnumerator WaitForMusicEnd(float duration)
-        {
-            yield return new WaitForSecondsRealtime(Mathf.Max(0f, duration) + Mathf.Max(0f, outroDelay));
-            _outroCoroutine = null;
-            GameEvent.HandleGameOver();
-        }
-
-        private void OnGameEnded()
-        {
-            if (!_gameStarted || _gameEnded)
-                return;
-
-            _gameEnded = true;
-            SetMenuActive(playMenu, false);
-            SetMenuActive(outroMenu, true);
-        }
-
-        private void SetMenuActive(Transform menu, bool active)
-        {
-            if (menu == null)
-            {
-                Debug.LogError("A menu reference is not assigned on UIManager.", this);
-                return;
-            }
-
-            menu.gameObject.SetActive(active);
-        }
+    public enum EMenu
+    {
+        Intro,
+        Outro,
+        PlayMenu
     }
 }
