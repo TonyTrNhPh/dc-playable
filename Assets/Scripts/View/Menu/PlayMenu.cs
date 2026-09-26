@@ -16,6 +16,7 @@ namespace View.Menu
         
         [Header("Score Text Settings")]
         [SerializeField] private TextMeshProUGUI scoreText;
+        [SerializeField] private ParticleSystem ringParticle;
 
         [Header("Animation Settings")]
         [SerializeField] private float heartPunchScale = 0.35f;
@@ -58,6 +59,7 @@ namespace View.Menu
         {
             _score += score;
             UpdateScoreText();
+            ringParticle.Play();
 
             if (scoreText == null)
                 return;
