@@ -18,9 +18,8 @@ namespace View.Behaviour
         [SerializeField] private float middlePadding = 1f;
         
         [Header("Background")]
-        [SerializeField] private SpriteRenderer background;
-        [SerializeField] private Sprite landscapeBackground;
-        [SerializeField] private Sprite portraitBackground;
+        [SerializeField] private SpriteRenderer landscapeBackground;
+        [SerializeField] private SpriteRenderer portraitBackground;
         [SerializeField] private float backgroundRippleDuration = 0.8f;
         
         [Header("Platform")]
@@ -33,9 +32,11 @@ namespace View.Behaviour
         [Header("Camera")]
         [SerializeField] private float landscapeOrthographicSize = 9f;
         [SerializeField] private float portraitOrthographicSize = 14f;
-        
+
+        private bool _isLandscapeMode;
         private int _lastScreenWidth;
         private int _lastScreenHeight;
+        private SpriteRenderer _currentBackground;
         private Camera _mainCamera;
         private MaterialPropertyBlock _backgroundRippleProperties;
         private Tween _backgroundRippleTween;
@@ -47,12 +48,6 @@ namespace View.Behaviour
         private void Awake()
         {
             _mainCamera = Camera.main;
-            if (background != null)
-            {
-                _backgroundRippleProperties = new MaterialPropertyBlock();
-                SetBackgroundRippleValue(RippleActiveId, 0f);
-                SetBackgroundRippleValue(RippleProgressId, RippleNormalProgress);
-            }
 
             if (Instance == null)
             {
@@ -77,6 +72,8 @@ namespace View.Behaviour
 
         private void Start()
         {
+            _isLandscapeMode = Screen.width > Screen.height;
+            
             UpdateOrthographicSize();
             UpdatePlatformWidth();
             UpdateBackground();
@@ -159,55 +156,58 @@ namespace View.Behaviour
         
         private void UpdateBackground()
         {
-            if (_mainCamera == null || background == null)
+            Debug.Log("Update Background 1");
+            if (_mainCamera == null || landscapeBackground == null || portraitBackground == null)
                 return;
             
-            if (Screen.width > Screen.height)
+            if (_isLandscapeMode)
             {
-                background.sprite = landscapeBackground;
+                landscapeBackground.gameObject.SetActive(true);
+                portraitBackground.gameObject.SetActive(false);
             }
             else
             {
-                background.sprite = portraitBackground;
+                landscapeBackground.gameObject.SetActive(false);
+                portraitBackground.gameObject.SetActive(true);
+            }
+
+            _currentBackground = _isLandscapeMode ? landscapeBackground : portraitBackground;
+            
+            if (landscapeBackground != null || portraitBackground != null)
+            {
+                _backgroundRippleProperties = new MaterialPropertyBlock();
+                SetBackgroundRippleValue(RippleActiveId, 0f);
+                SetBackgroundRippleValue(RippleProgressId, RippleNormalProgress);
             }
             
             float cameraHeight = _mainCamera.orthographicSize * 2f;
             float cameraWidth = cameraHeight * _mainCamera.aspect;
-
-            float spriteWidth = background.sprite.bounds.size.x;
-            float spriteHeight = background.sprite.bounds.size.y;
+            Debug.Log("Update Background 4");
+            float spriteWidth = _currentBackground.sprite.bounds.size.x;
+            float spriteHeight = _currentBackground.sprite.bounds.size.y;
 
             float scaleX = cameraWidth / spriteWidth;
             float scaleY = cameraHeight / spriteHeight;
 
             float scale = Mathf.Max(scaleX, scaleY);
 
-            background.transform.localScale = new Vector3(scale, scale, 1f);
+            _currentBackground.transform.localScale = new Vector3(scale, scale, 1f);
 
-            float cameraBottom = _mainCamera.transform.position.y 
-                                 - _mainCamera.orthographicSize;
+            float cameraBottom = _mainCamera.transform.position.y - _mainCamera.orthographicSize;
 
-            float backgroundHeight = background.bounds.size.y;
+            float backgroundHeight = _currentBackground.bounds.size.y;
 
-            background.transform.position = new Vector3(
-                _mainCamera.transform.position.x,
-                cameraBottom + backgroundHeight / 2f,
-                background.transform.position.z
-            );
+            _currentBackground.transform.position = new Vector3(_mainCamera.transform.position.x, cameraBottom + backgroundHeight / 2f, _currentBackground.transform.position.z);
         }
         private void UpdateOrthographicSize()
         {
             if (_mainCamera == null)
                 return;
-
-            if (Screen.width > Screen.height)
-            {
+            
+            if (_isLandscapeMode)
                 _mainCamera.orthographicSize = landscapeOrthographicSize;
-            }
             else
-            {
                 _mainCamera.orthographicSize = portraitOrthographicSize;
-            }
         }
 
         public bool GetPlatformBounds(CatType catType, out Bounds bounds)
@@ -237,7 +237,7 @@ namespace View.Behaviour
 
         private void PlayBackgroundRipple()
         {
-            if (background == null)
+            if (landscapeBackground == null || portraitBackground == null)
                 return;
             _backgroundRippleTween?.Complete();
             SetBackgroundRippleValue(RippleActiveId, 1f);
@@ -257,9 +257,9 @@ namespace View.Behaviour
 
         private void SetBackgroundRippleValue(int propertyId, float value)
         {
-            background.GetPropertyBlock(_backgroundRippleProperties);
+            _currentBackground.GetPropertyBlock(_backgroundRippleProperties);
             _backgroundRippleProperties.SetFloat(propertyId, value);
-            background.SetPropertyBlock(_backgroundRippleProperties);
+            _currentBackground.SetPropertyBlock(_backgroundRippleProperties);
         }
     }
 }

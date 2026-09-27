@@ -30,6 +30,10 @@ namespace View.Behaviour
         private RectTransform _floatingTextRectTransform;
         private Vector2 _floatingTextPosition;
         private bool _inputEnabled = true;
+        
+        private float _catHalfWidth;
+        private float _dragStartScreenX;
+        private float _dragStartWorldX;
     
         //----------- Cheering Animations -----------
         private const string CheerAnim = "Cheering_Happy _Victory";
@@ -61,7 +65,7 @@ namespace View.Behaviour
         private void Awake()
         {
             _skeletonAnimation = catModel.GetComponent<SkeletonAnimation>();
-
+            
             if (floatingText != null)
             {
                 floatingText.alpha = 0f;
@@ -72,6 +76,12 @@ namespace View.Behaviour
 
         private void Start()
         {
+            Renderer catRenderer = catModel.GetComponent<Renderer>();
+
+            if (catRenderer != null)
+                _catHalfWidth = catRenderer.bounds.extents.x;
+            
+            Debug.Log("Cat width: " + _catHalfWidth);
             StartIdleAnimations();
         }
 
@@ -143,21 +153,27 @@ namespace View.Behaviour
 
             foreach (Touch touch in Input.touches)
             {
-                if (_registeredFingerId == -1 &&
-                    touch.phase == TouchPhase.Began &&
-                    IsOnCatSide(touch.position))
+                if (_registeredFingerId == -1 && touch.phase == TouchPhase.Began && IsOnCatSide(touch.position))
                 {
                     _registeredFingerId = touch.fingerId;
+
+                    _dragStartScreenX = touch.position.x;
+                    _dragStartWorldX = transform.position.x;
+
+                    break;
                 }
-            
+
                 if (touch.fingerId != _registeredFingerId)
                     continue;
 
-                if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
-                    MoveCat(touch.deltaPosition.x);
-
-                if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+                if (touch.phase == TouchPhase.Moved)
+                {
+                    MoveCat(touch.position.x);
+                }
+                else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+                {
                     _registeredFingerId = -1;
+                }
 
                 break;
             }
@@ -176,20 +192,47 @@ namespace View.Behaviour
                    catType == CatType.Right && !isLeftSide;
         }
 
-        private void MoveCat(float deltaX)
+        private void MoveCat(float currentScreenX)
         {
-            Vector3 position = transform.position;
-            position.x += deltaX * speed * Time.deltaTime;
-            UpdateFacing(deltaX);
+            Camera mainCamera = Camera.main;
 
-            if (Environment.Instance != null &&
-                Environment.Instance.GetPlatformBounds(catType, out Bounds platformBounds))
+            if (mainCamera == null)
+                return;
+
+            float distance = Mathf.Abs(
+                mainCamera.transform.position.z - transform.position.z
+            );
+
+            float startWorldX = mainCamera.ScreenToWorldPoint(
+                new Vector3(
+                    _dragStartScreenX,
+                    0f,
+                    distance
+                )
+            ).x;
+
+            float currentWorldX = mainCamera.ScreenToWorldPoint(
+                new Vector3(
+                    currentScreenX,
+                    0f,
+                    distance
+                )
+            ).x;
+
+            float worldDeltaX = currentWorldX - startWorldX;
+
+            Vector3 position = transform.position;
+
+            position.x = _dragStartWorldX + worldDeltaX * speed;
+
+            UpdateFacing(worldDeltaX);
+
+            if (Environment.Instance != null && Environment.Instance.GetPlatformBounds(catType, out Bounds platformBounds))
             {
-                float halfWidth = catModel.GetComponent<Renderer>()?.bounds.extents.x ?? 0f;
-                position.x = Mathf.Clamp(
-                    position.x,
-                    platformBounds.min.x + halfWidth,
-                    platformBounds.max.x - halfWidth);
+                float minX = platformBounds.min.x + _catHalfWidth;
+                float maxX = platformBounds.max.x - _catHalfWidth;
+
+                position.x = Mathf.Clamp(position.x, minX, maxX);
             }
 
             transform.position = position;
