@@ -110,8 +110,6 @@ namespace View.Manager
             _gameEnding = true;
             _gameEndCoroutine = StartCoroutine(EndGameFlow());
             
-            GameEvent.HandleGameWon();
-            
             if (_playableEnded)
                 return;
 
@@ -130,8 +128,6 @@ namespace View.Manager
             
             _gameEnding = true;
             _gameEndCoroutine = StartCoroutine(EndGameFlow());
-            
-            GameEvent.HandleGameLost();
             
             if (_playableEnded)
                 return;

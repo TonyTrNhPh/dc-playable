@@ -39,7 +39,7 @@ namespace View.Manager
 
             GameEvent.HandleBGMStarted(clip.length);
 
-            _bgmMonitor = StartCoroutine(WaitForBGMEnd());
+            _bgmMonitor = StartCoroutine(WaitForBGMEnd(clip.length));
         }
 
         public void StopBGM()
@@ -54,12 +54,15 @@ namespace View.Manager
             }
         }
         
-        private IEnumerator WaitForBGMEnd()
+        private IEnumerator WaitForBGMEnd(float duration)
         {
-            yield return null;
-            
-            while (bgmSource.isPlaying)
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
                 yield return null;
+            }
 
             _bgmMonitor = null;
             GameEvent.HandleGameWon();

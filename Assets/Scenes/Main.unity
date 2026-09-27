@@ -1406,12 +1406,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a964d057ec03734cba701c1bbd274b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cheatEnable: 0
+  cheatEnable: 1
   speed: 16
   levelData: {fileID: 11400000, guid: 4a63e2a0300ee0847986671c393f3a81, type: 2}
   sfxClip: {fileID: 8300000, guid: fb41c9e7a0317c44cb24c489da78750e, type: 3}
   loseClip: {fileID: 8300000, guid: 90fc96f9609d03c4b94fc8abbe06568f, type: 3}
   winClip: {fileID: 8300000, guid: b8305d4a24e5504419a2f71780bc432e, type: 3}
+  cheerDelay: 1
   shortDelay: 3
   transitionToOutroDelay: 2
 --- !u!1 &745312057
