@@ -81,23 +81,125 @@ namespace View.Behaviour
             if (catRenderer != null)
                 _catHalfWidth = catRenderer.bounds.extents.x;
             
-            Debug.Log("Cat width: " + _catHalfWidth);
             StartIdleAnimations();
         }
+        
 
         private void OnEnable()
         {
             GameEvent.OnGameWon += PlayWinAnimation;
             GameEvent.OnGameLost += PlayLoseAnimation;
-            GameEvent.OnOutroTransitionStarted += DisableInput;
-            
         }
 
         private void OnDisable()
         {
             GameEvent.OnGameWon -= PlayWinAnimation;
             GameEvent.OnGameLost -= PlayLoseAnimation;
-            GameEvent.OnOutroTransitionStarted -= DisableInput;
+        }
+        
+        private void Update()
+        {
+            if (!_inputEnabled)
+                return;
+
+            foreach (Touch touch in Input.touches)
+            {
+                if (_registeredFingerId == -1 && touch.phase == TouchPhase.Began && IsOnCatSide(touch.position))
+                {
+                    _registeredFingerId = touch.fingerId;
+
+                    _dragStartScreenX = touch.position.x;
+                    _dragStartWorldX = transform.position.x;
+
+                    break;
+                }
+
+                if (touch.fingerId != _registeredFingerId)
+                    continue;
+
+                if (touch.phase == TouchPhase.Moved)
+                {
+                    if (!Mathf.Approximately(touch.deltaPosition.x, 0f))
+                    {
+                        UpdateFacing(touch.deltaPosition.x);
+                    }
+                    MoveCat(touch.position.x);
+                }
+                else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+                {
+                    _registeredFingerId = -1;
+                }
+
+                break;
+            }
+        }
+        
+        private void DisableInput()
+        {
+            _inputEnabled = false;
+            _registeredFingerId = -1;
+        }
+
+        private bool IsOnCatSide(Vector2 touchPosition)
+        {
+            bool isLeftSide = touchPosition.x < Screen.width * 0.5f;
+            return catType == CatType.Left && isLeftSide ||
+                   catType == CatType.Right && !isLeftSide;
+        }
+
+        private void MoveCat(float currentScreenX)
+        {
+            Camera mainCamera = Camera.main;
+
+            if (mainCamera == null)
+                return;
+
+            float distance = Mathf.Abs(
+                mainCamera.transform.position.z - transform.position.z
+            );
+
+            float startWorldX = mainCamera.ScreenToWorldPoint(
+                new Vector3(_dragStartScreenX, 0f, distance)
+            ).x;
+
+            float currentWorldX = mainCamera.ScreenToWorldPoint(
+                new Vector3(currentScreenX, 0f, distance)
+            ).x;
+
+            float worldDeltaX = currentWorldX - startWorldX;
+
+            Vector3 position = transform.position;
+            position.x = _dragStartWorldX + worldDeltaX * speed;
+
+            if (Environment.Instance != null &&
+                Environment.Instance.GetPlatformBounds(
+                    catType,
+                    out Bounds platformBounds))
+            {
+                float minX = platformBounds.min.x + _catHalfWidth;
+                float maxX = platformBounds.max.x - _catHalfWidth;
+
+                bool hitBound = position.x < minX || position.x > maxX;
+
+                position.x = Mathf.Clamp(
+                    position.x,
+                    minX,
+                    maxX
+                );
+
+                if (hitBound)
+                {
+                    _dragStartScreenX = currentScreenX;
+                    _dragStartWorldX = position.x;
+                }
+            }
+
+            transform.position = position;
+        }
+
+        private void UpdateFacing(float deltaX)
+        {
+            catModel.transform.localRotation = Quaternion.Euler(0f, deltaX < 0f ? 180f : 0f, 0f);
         }
     
         private void StartIdleAnimations()
@@ -113,12 +215,14 @@ namespace View.Behaviour
 
         private void PlayLoseAnimation()
         {
+            DisableInput();
             StopIdleAnimations();
             _skeletonAnimation.AnimationState.SetAnimation(0, MissObjectLoseAnim2, true);
         }
         
         private void PlayWinAnimation()
         {
+            DisableInput();
             StopIdleAnimations();
             _skeletonAnimation.AnimationState.SetAnimation(0, CheerAnim, true);
         }
@@ -146,109 +250,14 @@ namespace View.Behaviour
             };
         }
         
-        private void Update()
+        private void PlayEatingAnimation()
         {
-            if (!_inputEnabled)
-                return;
-
-            foreach (Touch touch in Input.touches)
-            {
-                if (_registeredFingerId == -1 && touch.phase == TouchPhase.Began && IsOnCatSide(touch.position))
-                {
-                    _registeredFingerId = touch.fingerId;
-
-                    _dragStartScreenX = touch.position.x;
-                    _dragStartWorldX = transform.position.x;
-
-                    break;
-                }
-
-                if (touch.fingerId != _registeredFingerId)
-                    continue;
-
-                if (touch.phase == TouchPhase.Moved)
-                {
-                    MoveCat(touch.position.x);
-                }
-                else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-                {
-                    _registeredFingerId = -1;
-                }
-
-                break;
-            }
+            StopIdleAnimations();
+            crumbParticle.Play();
+            _skeletonAnimation.AnimationState.SetAnimation(0, EatShotAnim, false);
+            _skeletonAnimation.AnimationState.AddAnimation(0, IdleTailAnim, true, 0f);
         }
-    
-        private void DisableInput()
-        {
-            _inputEnabled = false;
-            _registeredFingerId = -1;
-        }
-
-        private bool IsOnCatSide(Vector2 touchPosition)
-        {
-            bool isLeftSide = touchPosition.x < Screen.width * 0.5f;
-            return catType == CatType.Left && isLeftSide ||
-                   catType == CatType.Right && !isLeftSide;
-        }
-
-        private void MoveCat(float currentScreenX)
-        {
-            Camera mainCamera = Camera.main;
-
-            if (mainCamera == null)
-                return;
-
-            float distance = Mathf.Abs(
-                mainCamera.transform.position.z - transform.position.z
-            );
-
-            float startWorldX = mainCamera.ScreenToWorldPoint(
-                new Vector3(
-                    _dragStartScreenX,
-                    0f,
-                    distance
-                )
-            ).x;
-
-            float currentWorldX = mainCamera.ScreenToWorldPoint(
-                new Vector3(
-                    currentScreenX,
-                    0f,
-                    distance
-                )
-            ).x;
-
-            float worldDeltaX = currentWorldX - startWorldX;
-
-            Vector3 position = transform.position;
-
-            position.x = _dragStartWorldX + worldDeltaX * speed;
-
-            UpdateFacing(worldDeltaX);
-
-            if (Environment.Instance != null && Environment.Instance.GetPlatformBounds(catType, out Bounds platformBounds))
-            {
-                float minX = platformBounds.min.x + _catHalfWidth;
-                float maxX = platformBounds.max.x - _catHalfWidth;
-
-                position.x = Mathf.Clamp(position.x, minX, maxX);
-            }
-
-            transform.position = position;
-        }
-
-        private void UpdateFacing(float deltaX)
-        {
-            if (Mathf.Approximately(deltaX, 0f))
-                return;
-
-            catModel.transform.localRotation = Quaternion.Euler(
-                0f,
-                deltaX < 0f ? 180f : 0f,
-                0f);
-        }
-
+        
         private void OnTriggerEnter2D(Collider2D other)
         {
             if(!_inputEnabled)
@@ -299,15 +308,6 @@ namespace View.Behaviour
                         .SetDelay(_floatingTextVisibleDuration);
                 });
         }
-    
-        private void PlayEatingAnimation()
-        {
-            StopIdleAnimations();
-            crumbParticle.Play();
-            _skeletonAnimation.AnimationState.SetAnimation(0, EatShotAnim, false);
-            _skeletonAnimation.AnimationState.AddAnimation(0, IdleTailAnim, true, 0f);
-        }
-    
     }
 
     public enum CatType

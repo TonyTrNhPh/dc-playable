@@ -1406,13 +1406,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a964d057ec03734cba701c1bbd274b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cheatEnable: 1
+  cheatEnable: 0
   speed: 16
   levelData: {fileID: 11400000, guid: 4a63e2a0300ee0847986671c393f3a81, type: 2}
   sfxClip: {fileID: 8300000, guid: fb41c9e7a0317c44cb24c489da78750e, type: 3}
   loseClip: {fileID: 8300000, guid: 90fc96f9609d03c4b94fc8abbe06568f, type: 3}
   winClip: {fileID: 8300000, guid: b8305d4a24e5504419a2f71780bc432e, type: 3}
-  cheerDelay: 1
   shortDelay: 3
   transitionToOutroDelay: 2
 --- !u!1 &745312057
@@ -2133,6 +2132,26 @@ PrefabInstance:
     - target: {fileID: 2809673699113401787, guid: b3a53686324aa644488803c45ef9138a, type: 3}
       propertyPath: playOnAwake
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2809673699113401787, guid: b3a53686324aa644488803c45ef9138a, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key0.b
+      value: 0.22352943
+      objectReference: {fileID: 0}
+    - target: {fileID: 2809673699113401787, guid: b3a53686324aa644488803c45ef9138a, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key0.g
+      value: 0.7137255
+      objectReference: {fileID: 0}
+    - target: {fileID: 2809673699113401787, guid: b3a53686324aa644488803c45ef9138a, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.b
+      value: 0.043137256
+      objectReference: {fileID: 0}
+    - target: {fileID: 2809673699113401787, guid: b3a53686324aa644488803c45ef9138a, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.g
+      value: 0.47450984
+      objectReference: {fileID: 0}
+    - target: {fileID: 2809673699113401787, guid: b3a53686324aa644488803c45ef9138a, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5263342986281223901, guid: b3a53686324aa644488803c45ef9138a, type: 3}
       propertyPath: m_Name
