@@ -117,7 +117,6 @@ namespace View.Manager
 
             _playableEnded = true;
             
-            Luna.Unity.Playable.InstallFullGame();
             Luna.Unity.LifeCycle.GameEnded();
         }
 
@@ -139,8 +138,6 @@ namespace View.Manager
 
             _playableEnded = true;
             
-            
-            Luna.Unity.Playable.InstallFullGame();
             Luna.Unity.LifeCycle.GameEnded();
         }
 

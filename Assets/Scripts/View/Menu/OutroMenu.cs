@@ -47,7 +47,7 @@ namespace View.Menu
             UpdateUI();
             StartAnimation();
         }
-
+        
         private void UpdateUI()
         {
             if (!_isLandscapeMode)
@@ -92,8 +92,6 @@ namespace View.Menu
                     }
                     else
                     {
-                        // First card is only the starting point.
-                        // Move to the second card.
                         MoveHandToCard(_secondCardTransform, true);
                     }
                 });

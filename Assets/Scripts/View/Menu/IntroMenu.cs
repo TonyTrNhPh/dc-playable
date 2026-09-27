@@ -6,13 +6,19 @@ namespace View.Menu
 {
     public class IntroMenu : MonoBehaviour
     {
-        [Header("GameObject")]
-        [SerializeField] private GameObject leftFinger;
-        [SerializeField] private GameObject rightFinger;
-        [SerializeField] private GameObject arrow;
-        [SerializeField] private GameObject message;
+        [Header("Portrait Settings")]
+        [SerializeField] private float maxPortraitLenght = 100f;
+        [SerializeField] private GameObject portraitMode;
+        [SerializeField] private GameObject[] portraitFingers;
+        [SerializeField] private GameObject portraitMessage;
 
-        [Header("Movement")]
+        [Header("Landscape Settings")]
+        [SerializeField] private float maxLandscapeLenght = 100f;
+        [SerializeField] private GameObject landscapeMode;
+        [SerializeField] private GameObject[] landscapeFingers;
+        [SerializeField] private GameObject landscapeMessage;
+
+        [Header("Movement")] 
         [SerializeField] private float moveDuration = 0.8f;
         [SerializeField] private float fadeDuration = 0.3f;
 
@@ -25,30 +31,58 @@ namespace View.Menu
         private CanvasGroup _canvasMessage;
 
         private float _moveDistance;
-        private float _arrowWidth;
-
+        private float _fingerWidth;
+        
+        private bool _isLandscapeMode;
         private bool touched;
+
+        private GameObject[] _currentFingers;
+        private GameObject _currentMessage;
 
         private void Awake()
         {
-            _arrowWidth = arrow.GetComponent<RectTransform>().rect.width;
+            // Initialize based on screen orientation
+            _isLandscapeMode = Screen.width > Screen.height;
+            
+            if (_isLandscapeMode)
+            {
+                _currentFingers = landscapeFingers;
+                _currentMessage = landscapeMessage;
+            }
+            else
+            {
+                _currentFingers = portraitFingers;
+                _currentMessage = portraitMessage;
+            }
 
-            _transformLeft = leftFinger.GetComponent<RectTransform>();
-            _transformRight = rightFinger.GetComponent<RectTransform>();
-            _transformMessage = message.GetComponent<RectTransform>();
+            if (_currentFingers.Length >= 2)
+            {
+                _fingerWidth = _currentFingers[0].GetComponent<RectTransform>().rect.width;
 
-            _canvasLeft = leftFinger.GetComponent<CanvasGroup>();
-            _canvasRight = rightFinger.GetComponent<CanvasGroup>();
-            _canvasMessage = message.GetComponent<CanvasGroup>();
+                _transformLeft = _currentFingers[0].GetComponent<RectTransform>();
+                _transformRight = _currentFingers[1].GetComponent<RectTransform>();
+
+                _canvasLeft = _currentFingers[0].GetComponent<CanvasGroup>();
+                _canvasRight = _currentFingers[1].GetComponent<CanvasGroup>();
+            }
+
+            if (_currentMessage != null)
+            {
+                _transformMessage = _currentMessage.GetComponent<RectTransform>();
+                _canvasMessage = _currentMessage.GetComponent<CanvasGroup>();
+            }
         }
 
         private void Start()
         {
             UpdateUI();
 
-            _canvasLeft.alpha = 0f;
-            _canvasRight.alpha = 0f;
-            _canvasMessage.alpha = 0f;
+            if (_canvasLeft != null)
+                _canvasLeft.alpha = 0f;
+            if (_canvasRight != null)
+                _canvasRight.alpha = 0f;
+            if (_canvasMessage != null)
+                _canvasMessage.alpha = 0f;
 
             StartFadeIn();
         }
@@ -70,58 +104,102 @@ namespace View.Menu
             Debug.Log("Screen height: " + Screen.height);
             Debug.Log("Screen width: " + Screen.width);
             
-            _transformLeft.anchoredPosition = new Vector2(
-                _transformLeft.anchoredPosition.x + _arrowWidth / 2, 
-                _transformLeft.anchoredPosition.y + Screen.height / 5f);
+            _isLandscapeMode = Screen.width > Screen.height;
 
-            _transformRight.anchoredPosition = new Vector2(
-                _transformRight.anchoredPosition.x - _arrowWidth / 2, 
-                _transformRight.anchoredPosition.y + Screen.height / 5f);
+            if (!_isLandscapeMode)
+            {
+                portraitMode.SetActive(true);
+                landscapeMode.SetActive(false);
 
-            _moveDistance = Screen.width / 4f - _arrowWidth / 2;
+                _currentFingers = portraitFingers;
+                _currentMessage = portraitMessage;
+            }
+            else
+            {
+                portraitMode.SetActive(false);
+                landscapeMode.SetActive(true);
+
+                _currentFingers = landscapeFingers;
+                _currentMessage = landscapeMessage;
+            }
+
+            // Re-initialize transforms and canvas groups based on current orientation
+            if (_currentFingers.Length >= 2)
+            {
+                _transformLeft = _currentFingers[0].GetComponent<RectTransform>();
+                _transformRight = _currentFingers[1].GetComponent<RectTransform>();
+
+                _canvasLeft = _currentFingers[0].GetComponent<CanvasGroup>();
+                _canvasRight = _currentFingers[1].GetComponent<CanvasGroup>();
+
+                _transformLeft.anchoredPosition = new Vector2(
+                    _transformLeft.anchoredPosition.x + _fingerWidth / 2, 
+                    _transformLeft.anchoredPosition.y + Screen.height / 5f);
+
+                _transformRight.anchoredPosition = new Vector2(
+                    _transformRight.anchoredPosition.x - _fingerWidth / 2, 
+                    _transformRight.anchoredPosition.y + Screen.height / 5f);
+            }
+
+            if (_currentMessage != null)
+            {
+                _transformMessage = _currentMessage.GetComponent<RectTransform>();
+                _canvasMessage = _currentMessage.GetComponent<CanvasGroup>();
+            }
+            
+            float maxLength = _isLandscapeMode ? maxLandscapeLenght : maxPortraitLenght;
+            _moveDistance = maxLength - _fingerWidth / 2;
         }
 
         private void StartFadeIn()
         {
-            _canvasLeft
-                .DOFade(1f, fadeDuration);
+            if (_canvasLeft != null)
+                _canvasLeft.DOFade(1f, fadeDuration);
 
-            _canvasRight
-                .DOFade(1f, fadeDuration);
+            if (_canvasRight != null)
+                _canvasRight.DOFade(1f, fadeDuration);
 
-            _canvasMessage
-                .DOFade(1f, fadeDuration)
-                .OnComplete(StartFingerAnimation);
+            if (_canvasMessage != null)
+                _canvasMessage
+                    .DOFade(1f, fadeDuration)
+                    .OnComplete(StartFingerAnimation);
+            else
+                StartFingerAnimation();
         }
 
         private void StartFingerAnimation()
         {
-            _transformLeft
-                .DOAnchorPosX(
-                    _transformLeft.anchoredPosition.x + _moveDistance,
-                    moveDuration
-                )
-                .SetLoops(-1, LoopType.Yoyo);
+            if (_transformLeft != null)
+                _transformLeft
+                    .DOAnchorPosX(
+                        _transformLeft.anchoredPosition.x + _moveDistance,
+                        moveDuration
+                    )
+                    .SetLoops(-1, LoopType.Yoyo);
 
-            _transformRight
-                .DOAnchorPosX(
-                    _transformRight.anchoredPosition.x - _moveDistance,
-                    moveDuration
-                )
-                .SetLoops(-1, LoopType.Yoyo);
+            if (_transformRight != null)
+                _transformRight
+                    .DOAnchorPosX(
+                        _transformRight.anchoredPosition.x - _moveDistance,
+                        moveDuration
+                    )
+                    .SetLoops(-1, LoopType.Yoyo);
         }
 
         private void HideIntro()
         {
-            _canvasLeft
-                .DOFade(0f, fadeDuration);
+            if (_canvasLeft != null)
+                _canvasLeft.DOFade(0f, fadeDuration);
 
-            _canvasRight
-                .DOFade(0f, fadeDuration);
+            if (_canvasRight != null)
+                _canvasRight.DOFade(0f, fadeDuration);
 
-            _canvasMessage
-                .DOFade(0f, fadeDuration)
-                .OnComplete(DisableIntro);
+            if (_canvasMessage != null)
+                _canvasMessage
+                    .DOFade(0f, fadeDuration)
+                    .OnComplete(DisableIntro);
+            else
+                DisableIntro();
         }
 
         private void DisableIntro()
